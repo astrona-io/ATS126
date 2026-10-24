@@ -1,0 +1,9 @@
+# The nightly run, created again after the Pipeline is fixed.
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: nightly-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: nightly

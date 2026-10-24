@@ -1,0 +1,119 @@
+# The CI Pipeline the capstone starts with. It has four faults:
+#  - build fetches build-image from the namespace "ci-catalogue", which does
+#    not exist (the Task is in ci-catalog);
+#  - the matrix of test passes "images", but unit-test expects "image";
+#  - deploy uses notin instead of in, so it runs on every branch but main;
+#  - the finally task notify consumes a result of build, so it is skipped
+#    whenever build does not run.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: bridge-ci
+  namespace: starfleet
+spec:
+  params:
+    - name: repo-url
+      type: string
+      default: http://gitea-http.gitea.svc.cluster.local:3000/starfleet/bridge.git
+    - name: branch
+      type: string
+      default: main
+    - name: image
+      type: string
+      default: registry.registry.svc.cluster.local:5000/starfleet/bridge
+  workspaces:
+    - name: source
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.branch)
+      workspaces:
+        - name: output
+          workspace: source
+    - name: lint
+      runAfter:
+        - clone
+      taskRef:
+        name: shellcheck
+      workspaces:
+        - name: source
+          workspace: source
+    - name: test
+      runAfter:
+        - clone
+      taskRef:
+        name: unit-test
+      matrix:
+        params:
+          - name: images
+            value:
+              - busybox:1.37.0
+              - alpine:3.22.7
+      workspaces:
+        - name: source
+          workspace: source
+    - name: scan
+      runAfter:
+        - clone
+      taskRef:
+        name: secret-scan
+      workspaces:
+        - name: source
+          workspace: source
+    - name: build
+      runAfter:
+        - lint
+        - test
+        - scan
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: build-image
+          - name: namespace
+            value: ci-catalogue
+      params:
+        - name: image
+          value: $(params.image)
+        - name: tag
+          value: $(tasks.clone.results.short-commit)
+      workspaces:
+        - name: source
+          workspace: source
+    - name: deploy
+      when:
+        - input: $(params.branch)
+          operator: notin
+          values:
+            - main
+      taskRef:
+        name: deploy
+      params:
+        - name: image-url
+          value: $(tasks.build.results.IMAGE_URL)
+        - name: image-digest
+          value: $(tasks.build.results.IMAGE_DIGEST)
+        - name: commit
+          value: $(tasks.clone.results.commit)
+  finally:
+    - name: notify
+      taskRef:
+        name: notify
+      params:
+        - name: pipelinerun
+          value: $(context.pipelineRun.name)
+        - name: branch
+          value: $(params.branch)
+        - name: status
+          value: $(tasks.status)
+        - name: deploy-status
+          value: $(tasks.deploy.status)
+        - name: detail
+          value: $(tasks.build.results.IMAGE_URL)

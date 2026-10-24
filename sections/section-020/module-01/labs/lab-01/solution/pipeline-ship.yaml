@@ -1,0 +1,45 @@
+# The finished Pipeline: deploy only runs for main, and the finally task
+# notify reports the aggregate status and the status of deploy on every run.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: ship
+  namespace: starfleet
+spec:
+  params:
+    - name: branch
+      type: string
+    - name: fail
+      type: string
+      default: "false"
+  tasks:
+    - name: build
+      taskRef:
+        name: build-app
+      params:
+        - name: branch
+          value: $(params.branch)
+        - name: fail
+          value: $(params.fail)
+    - name: deploy
+      when:
+        - input: $(params.branch)
+          operator: in
+          values:
+            - main
+      taskRef:
+        name: deploy-app
+      params:
+        - name: image
+          value: $(tasks.build.results.image)
+  finally:
+    - name: notify
+      taskRef:
+        name: notify
+      params:
+        - name: branch
+          value: $(params.branch)
+        - name: pipeline-status
+          value: $(tasks.status)
+        - name: deploy-status
+          value: $(tasks.deploy.status)

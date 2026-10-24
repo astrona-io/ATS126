@@ -1,0 +1,12 @@
+# Yesterday's run: a feature branch that was deployed. It shows the problem.
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: ship-feature-0
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: ship
+  params:
+    - name: branch
+      value: feature/radar

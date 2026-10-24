@@ -1,0 +1,42 @@
+# The shared namespace ci-catalog with the build Task. Pipelines in other
+# namespaces use it through the cluster resolver.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ci-catalog
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-image
+  namespace: ci-catalog
+spec:
+  description: >
+    Builds the Dockerfile in the workspace with kaniko and pushes the image.
+    kaniko runs as root in the container but needs no privileged mode.
+  params:
+    - name: image
+      type: string
+      description: The repository to push to, without a tag
+    - name: tag
+      type: string
+  workspaces:
+    - name: source
+  results:
+    - name: IMAGE_URL
+    - name: IMAGE_DIGEST
+  steps:
+    - name: build-and-push
+      image: ghcr.io/osscontainertools/kaniko:v1.28.5-debug
+      script: |
+        #!/bin/sh
+        set -eu
+        # --insecure pushes over plain HTTP: the in-cluster registry has no TLS (lab only).
+        /kaniko/executor \
+          --context="dir://$(workspaces.source.path)" \
+          --dockerfile="$(workspaces.source.path)/Dockerfile" \
+          --destination="$(params.image):$(params.tag)" \
+          --digest-file="$(results.IMAGE_DIGEST.path)" \
+          --insecure
+        printf '%s' "$(params.image):$(params.tag)" > "$(results.IMAGE_URL.path)"
+        echo "Pushed $(params.image):$(params.tag)"

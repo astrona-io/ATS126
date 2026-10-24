@@ -1,0 +1,92 @@
+# The four Tasks of the release-notes Pipeline. They are correct; the faults
+# are in the Pipeline and the PipelineRun.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: fetch-notes
+  namespace: starfleet
+spec:
+  params:
+    - name: version
+      type: string
+  workspaces:
+    - name: source
+  results:
+    - name: revision
+  steps:
+    - name: fetch
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        notes="$(workspaces.source.path)/notes.md"
+        printf '# Release %s\n' "$(params.version)" > "$notes"
+        echo "Faster pipeline starts" >> "$notes"
+        echo "Shared workspaces for every task" >> "$notes"
+        printf 'notes-%s' "$(params.version)" | tee "$(results.revision.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: lint-notes
+  namespace: starfleet
+spec:
+  workspaces:
+    - name: source
+  results:
+    - name: lines
+  steps:
+    - name: lint
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        # The sleep stands in for a slow linter.
+        sleep 10
+        printf '%s' "$(wc -l < "$(workspaces.source.path)/notes.md" | tr -d ' ')" | tee "$(results.lines.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: spellcheck-notes
+  namespace: starfleet
+spec:
+  workspaces:
+    - name: source
+  results:
+    - name: words
+  steps:
+    - name: spellcheck
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        # The sleep stands in for a slow spell checker.
+        sleep 10
+        printf '%s' "$(wc -w < "$(workspaces.source.path)/notes.md" | tr -d ' ')" | tee "$(results.words.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: publish-notes
+  namespace: starfleet
+spec:
+  params:
+    - name: revision
+      type: string
+    - name: lines
+      type: string
+    - name: words
+      type: string
+    - name: channel
+      type: string
+      description: Where the notice goes. No default on purpose.
+  results:
+    - name: notice
+  steps:
+    - name: publish
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        printf '%s to %s: %s lines, %s words' "$(params.revision)" "$(params.channel)" "$(params.lines)" "$(params.words)" | tee "$(results.notice.path)"

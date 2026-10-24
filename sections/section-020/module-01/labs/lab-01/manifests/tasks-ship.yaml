@@ -1,0 +1,71 @@
+# The Tasks of the ship Pipeline. They are correct; the work is in the
+# Pipeline.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-app
+  namespace: starfleet
+spec:
+  params:
+    - name: branch
+      type: string
+    - name: fail
+      type: string
+      default: "false"
+      description: Set to "true" to make the build fail on purpose
+  results:
+    - name: image
+  steps:
+    - name: build
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        if [ "$(params.fail)" = "true" ]; then
+          echo "The build failed" >&2
+          exit 1
+        fi
+        tag="$(echo '$(params.branch)' | tr '/' '-')"
+        printf 'ship:%s' "$tag" | tee "$(results.image.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: deploy-app
+  namespace: starfleet
+spec:
+  params:
+    - name: image
+      type: string
+  results:
+    - name: deployed
+  steps:
+    - name: deploy
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        printf 'deployed %s' "$(params.image)" | tee "$(results.deployed.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: notify
+  namespace: starfleet
+spec:
+  params:
+    - name: branch
+      type: string
+    - name: pipeline-status
+      type: string
+    - name: deploy-status
+      type: string
+  results:
+    - name: message
+  steps:
+    - name: notify
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        printf 'branch=%s pipeline=%s deploy=%s' "$(params.branch)" "$(params.pipeline-status)" "$(params.deploy-status)" | tee "$(results.message.path)"

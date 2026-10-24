@@ -1,0 +1,23 @@
+# The PipelineRun, created again after the Pipeline is fixed.
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: launch-check-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: launch-check
+  params:
+    - name: crew
+      value: "bridge scout shuttle"
+    - name: release
+      value: r42
+  workspaces:
+    - name: shared
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 16Mi

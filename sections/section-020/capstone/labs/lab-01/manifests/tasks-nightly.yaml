@@ -1,0 +1,85 @@
+# The Tasks of the nightly Pipeline. They are correct; the faults are in the
+# Pipeline.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: warm-cache
+  namespace: starfleet
+spec:
+  steps:
+    - name: download
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        # The first attempt of every run fails, like a mirror that answers
+        # only after a first request has woken it up.
+        echo "Attempt number $(context.task.retry-count)"
+        if [ "$(context.task.retry-count)" = "0" ]; then
+          echo "The cache mirror did not answer" >&2
+          exit 1
+        fi
+        echo "The cache is warm"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: integration
+  namespace: starfleet
+spec:
+  params:
+    - name: break
+      type: string
+      default: "false"
+      description: Set to "true" to make the tests fail on purpose
+  results:
+    - name: summary
+  steps:
+    - name: test
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        echo "Running the integration tests (about 20 seconds)"
+        sleep 20
+        if [ "$(params.break)" = "true" ]; then
+          echo "3 tests failed" >&2
+          exit 1
+        fi
+        printf '42 tests passed' | tee "$(results.summary.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: docs-check
+  namespace: starfleet
+spec:
+  steps:
+    - name: links
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        # A known problem: one external link is broken, and the team has
+        # decided that this must not stop the nightly run.
+        echo "1 external link is broken" >&2
+        exit 1
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: report
+  namespace: starfleet
+spec:
+  params:
+    - name: integration
+      type: string
+    - name: docs
+      type: string
+  results:
+    - name: message
+  steps:
+    - name: report
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        printf 'integration=%s docs=%s' "$(params.integration)" "$(params.docs)" | tee "$(results.message.path)"

@@ -1,0 +1,57 @@
+# The Pipeline the capstone starts with. It has two faults:
+#  - spellcheck runs after lint, although the two only need fetch and should
+#    run in parallel;
+#  - publish never gets a value for the Task parameter channel.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: release-notes
+  namespace: starfleet
+spec:
+  params:
+    - name: version
+      type: string
+    - name: channel
+      type: string
+      default: launch-news
+  workspaces:
+    - name: source
+  results:
+    - name: notice
+      value: $(tasks.publish.results.notice)
+  tasks:
+    - name: fetch
+      taskRef:
+        name: fetch-notes
+      params:
+        - name: version
+          value: $(params.version)
+      workspaces:
+        - name: source
+          workspace: source
+    - name: lint
+      runAfter:
+        - fetch
+      taskRef:
+        name: lint-notes
+      workspaces:
+        - name: source
+          workspace: source
+    - name: spellcheck
+      runAfter:
+        - lint
+      taskRef:
+        name: spellcheck-notes
+      workspaces:
+        - name: source
+          workspace: source
+    - name: publish
+      taskRef:
+        name: publish-notes
+      params:
+        - name: revision
+          value: $(tasks.fetch.results.revision)
+        - name: lines
+          value: $(tasks.lint.results.lines)
+        - name: words
+          value: $(tasks.spellcheck.results.words)

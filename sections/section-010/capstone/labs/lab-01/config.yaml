@@ -1,0 +1,56 @@
+# Repair A Release Notes Pipeline (section 010 capstone)
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-capstone-010"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-capstone-010-setup"
+      description: "Applies the release-notes Tasks, the Pipeline with two faults and a PipelineRun with a wrong workspace name, and waits until the run has failed"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-pipeline-spec"
+      description: "Confirms lint and spellcheck run after fetch only and publish passes channel from the Pipeline"
+      type: "file"
+      source: "validation/validate-pipeline-spec.sh"
+    - name: "validate-release-notes-run"
+      description: "Confirms release-notes-run succeeded with the expected notice, the two checks overlapped and publish waited for both"
+      type: "file"
+      source: "validation/validate-release-notes-run.sh"
+    - name: "validate-grader-run"
+      description: "Runs the Pipeline with version v2.0 and channel outpost-news and confirms the notice"
+      type: "file"
+      source: "validation/validate-grader-run.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

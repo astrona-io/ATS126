@@ -1,0 +1,60 @@
+# Guard A Deploy And Report With finally
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-lab-020-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-lab-020-01-setup"
+      description: "Applies the Tasks and the Pipeline ship, and runs it once for a feature branch, which deploys"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The work a correct learner does; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-pipeline-spec"
+      description: "Confirms deploy is guarded by branch in [main] and notify is a finally task"
+      type: "file"
+      source: "validation/validate-pipeline-spec.sh"
+    - name: "validate-ship-main"
+      description: "Confirms ship-main succeeded, deployed and was reported as Succeeded"
+      type: "file"
+      source: "validation/validate-ship-main.sh"
+    - name: "validate-ship-feature"
+      description: "Confirms ship-feature completed with deploy skipped by its when expression and was reported as Completed"
+      type: "file"
+      source: "validation/validate-ship-feature.sh"
+    - name: "validate-failure-report"
+      description: "Runs the Pipeline with a failing build and confirms notify still reports the failure"
+      type: "file"
+      source: "validation/validate-failure-report.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

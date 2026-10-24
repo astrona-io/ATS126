@@ -1,0 +1,41 @@
+# The fixed Pipeline: one retry for warm-cache, a 2m timeout for integration,
+# onError: continue for docs-check, and a report that uses execution status.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: nightly
+  namespace: starfleet
+spec:
+  params:
+    - name: break
+      type: string
+      default: "false"
+  tasks:
+    - name: warm-cache
+      retries: 1
+      taskRef:
+        name: warm-cache
+    - name: integration
+      runAfter:
+        - warm-cache
+      timeout: 2m
+      taskRef:
+        name: integration
+      params:
+        - name: break
+          value: $(params.break)
+    - name: docs-check
+      runAfter:
+        - warm-cache
+      onError: continue
+      taskRef:
+        name: docs-check
+  finally:
+    - name: report
+      taskRef:
+        name: report
+      params:
+        - name: integration
+          value: $(tasks.integration.status)
+        - name: docs
+          value: $(tasks.docs-check.status)

@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: bridge-ci-main
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: bridge-ci
+  params:
+    - name: branch
+      value: main
+  taskRunTemplate:
+    serviceAccountName: ci-bot
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 64Mi

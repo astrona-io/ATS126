@@ -1,0 +1,21 @@
+# Combines the manifest identifier and the crew count into one line.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: report
+  namespace: starfleet
+spec:
+  params:
+    - name: manifest-id
+      type: string
+    - name: count
+      type: string
+  results:
+    - name: summary
+  steps:
+    - name: report
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        printf '%s: %s crew ready' "$(params.manifest-id)" "$(params.count)" | tee "$(results.summary.path)"

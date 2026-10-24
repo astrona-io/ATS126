@@ -1,0 +1,287 @@
+# Course manifest for ATS126 - Pipelines, Task Graphs & Custom Tasks (Tekton).
+#
+# One entry per section under `modules:`. Each section lists, in order: its
+# README, then for each module the landing page (course.md), its parts
+# (course-0N-*.md), and right after the part a lab tests, the lab's
+# question.md reading and the `type: lab` entry. The module's summary page
+# comes last. The section capstone closes the section. Playgrounds are not
+# listed: the landing page's playground marker shows them. solution.md is
+# never listed.
+#
+# Every `path:` is relative to this file.
+
+training:
+  id: ATS126
+  title: "Tekton: Pipelines, Task Graphs & Custom Tasks"
+  maturity: draft
+  description: >
+    Training material covering the Pipelines, Task Graphs & Custom Tasks
+    domain of the Tekton training path: Pipeline and PipelineRun
+    specifications, parameters and workspaces, building a directed acyclic
+    graph of Tasks with runAfter and result references, pipeline results and
+    the status of a PipelineRun, conditional execution with when expressions
+    (and CEL behind its feature flag), finally tasks and execution status,
+    timeouts, retries and onError, matrix fan-out, custom tasks and remote
+    resolution, and an end-to-end CI pipeline that clones from an in-cluster
+    Git server, lints, tests on two images, scans, builds and pushes an image
+    with kaniko, deploys only from main and reports its status from a finally
+    task. Each module pairs a layered reader with an ungraded hands-on
+    playground and a graded practice lab. Each section closes with an
+    integration capstone. Written for Tekton Pipelines v1.17.1 and tkn
+    v0.46.2.
+
+  certification:
+    name: Tekton
+    code: TEKTON
+    provider: Astrona
+    domain: "Pipelines, Task Graphs & Custom Tasks"
+    weight: 25
+
+modules:
+
+  - id: module-intro
+    title: "Introduction"
+    description: >
+      Start here. What this course trains you to do, how it is laid out, how
+      to get your machine ready with the astrona command-line tool, how the
+      content is written and checked, who maintains it, and how to report a
+      mistake.
+
+    content:
+      - type: reading
+        title: Introduction
+        path: sections/intro/README.md
+      - type: reading
+        title: "Welcome To The Course"
+        path: sections/intro/course-01-welcome.md
+      - type: reading
+        title: "Get Your Machine Ready"
+        path: sections/intro/course-02-get-your-machine-ready.md
+      - type: reading
+        title: "How This Course Is Made"
+        path: sections/intro/course-03-how-this-course-is-made.md
+
+  - id: module-010
+    title: "Pipelines And The Task Graph"
+    description: >
+      Pipeline and PipelineRun specifications, parameters and workspaces,
+      passing results between tasks and out of the Pipeline, ordering tasks
+      into a directed acyclic graph with runAfter and result references, and
+      reading the status and child TaskRuns of a PipelineRun.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-010/README.md
+
+      - type: reading
+        title: "Build A Task Graph With Pipelines"
+        path: sections/section-010/module-01/course.md
+      - type: reading
+        title: "Pipelines, PipelineRuns And Workspaces"
+        path: sections/section-010/module-01/course-01-pipelines-pipelineruns-and-workspaces.md
+      - type: reading
+        title: "Pass Results Between Tasks And Out Of The Pipeline"
+        path: sections/section-010/module-01/course-02-results-between-tasks.md
+      - type: reading
+        title: "Order Tasks Into A Graph And Read The Run"
+        path: sections/section-010/module-01/course-03-order-tasks-into-a-graph.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Fix The Task Graph Of A Pipeline Lab"
+        path: sections/section-010/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 25m
+        topic: pipelines
+        task_kind: troubleshooting
+        tags: [pipeline, pipelinerun, run-after, dag, task-results, pipeline-results, workspaces]
+        learning_goals:
+          - Read why a PipelineRun failed from its condition, its child TaskRuns and their logs
+          - Fix a misspelled result reference and a missing runAfter between two tasks that share a file
+          - Prove the order of the tasks and the pipeline result with a new PipelineRun
+        resources:
+          - name: "Pipelines"
+            url: https://tekton.dev/docs/pipelines/pipelines/
+          - name: "PipelineRuns"
+            url: https://tekton.dev/docs/pipelines/pipelineruns/
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-010/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Release Notes Pipeline Capstone"
+        path: sections/section-010/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: pipelines
+        task_kind: troubleshooting
+        tags: [pipelinerun, workspaces, volume-claim-template, pipeline-params, run-after, dag, pipeline-results]
+        learning_goals:
+          - Find each fault of a PipelineRun from its condition, one after the other
+          - Fix a workspace binding, a parameter the Pipeline never passes, and two tasks that run one after the other instead of in parallel
+          - Prove the parallel order and the pipeline result with a PipelineRun
+        resources:
+          - name: "PipelineRuns"
+            url: https://tekton.dev/docs/pipelines/pipelineruns/
+          - name: "Pipelines"
+            url: https://tekton.dev/docs/pipelines/pipelines/
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+
+  - id: module-020
+    title: "Control Flow With When, Finally, Timeouts And Retries"
+    description: >
+      Guarding pipeline tasks with when expressions (and CEL behind its
+      feature flag), reading skipped tasks and their reasons, finally tasks
+      and the execution status of tasks, timeouts for the whole run, for the
+      tasks and for finally, retries, and onError for failures that must not
+      stop the run.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-020/README.md
+
+      - type: reading
+        title: "Control How A Pipeline Runs"
+        path: sections/section-020/module-01/course.md
+      - type: reading
+        title: "Guard Tasks With when Expressions"
+        path: sections/section-020/module-01/course-01-guard-tasks-with-when.md
+      - type: reading
+        title: "Run finally Tasks And Read Execution Status"
+        path: sections/section-020/module-01/course-02-finally-tasks-and-execution-status.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Guard A Deploy And Report With finally Lab"
+        path: sections/section-020/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: control-flow
+        task_kind: build
+        tags: [when-expressions, skipped-tasks, finally, execution-status, pipelinerun, pipeline-params]
+        learning_goals:
+          - Guard a deploy task with a when expression on a branch parameter
+          - Add a finally task that reports the aggregate status and the status of one task
+          - Prove with three PipelineRuns that the deploy is skipped off main and that the report also arrives on failure
+        resources:
+          - name: "Pipelines: when expressions and finally"
+            url: https://tekton.dev/docs/pipelines/pipelines/
+          - name: "PipelineRuns"
+            url: https://tekton.dev/docs/pipelines/pipelineruns/
+          - name: "Variable substitutions"
+            url: https://tekton.dev/docs/pipelines/variables/
+      - type: reading
+        title: "Timeouts, Retries And onError"
+        path: sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-020/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Make A Nightly Pipeline Reliable Capstone"
+        path: sections/section-020/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 35m
+        topic: control-flow
+        task_kind: troubleshooting
+        tags: [retries, timeouts, on-error, finally, execution-status, skipped-tasks]
+        learning_goals:
+          - Find why a nightly PipelineRun fails from the reasons of its TaskRuns
+          - Fix a flaky task with retries, a timeout that is too short, a known failure with onError, and a finally task that is skipped on failure
+          - Prove that the report arrives with the right status on success and on failure
+        resources:
+          - name: "Pipelines: retries, onError, timeout and finally"
+            url: https://tekton.dev/docs/pipelines/pipelines/
+          - name: "PipelineRuns: timeouts"
+            url: https://tekton.dev/docs/pipelines/pipelineruns/
+          - name: "Variable substitutions"
+            url: https://tekton.dev/docs/pipelines/variables/
+
+  - id: module-030
+    title: "Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline"
+    description: >
+      Fanning a pipeline task out with a matrix and collecting its results,
+      custom tasks and CustomRuns, fetching Tasks with the cluster and Git
+      resolvers, and designing a complete CI pipeline: clone from Gitea, lint,
+      unit tests on two images, a secret scan, an image build and push with
+      kaniko, a deploy only from main, and a notification from a finally
+      task.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-030/README.md
+
+      - type: reading
+        title: "Fan Out And Build A CI Pipeline"
+        path: sections/section-030/module-01/course.md
+      - type: reading
+        title: "Fan Out A Task With A Matrix"
+        path: sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
+      - type: reading
+        title: "Custom Tasks And Remote Resolution"
+        path: sections/section-030/module-01/course-02-custom-tasks-and-remote-resolution.md
+      - type: reading
+        title: "Design An End-To-End CI Pipeline"
+        path: sections/section-030/module-01/course-03-design-an-end-to-end-ci-pipeline.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Build An End-To-End CI Pipeline Lab"
+        path: sections/section-030/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 45m
+        topic: ci-pipeline
+        task_kind: build
+        tags: [matrix, git-clone, unit-tests, security-scan, image-build, conditional-deploy, notifications, dag]
+        learning_goals:
+          - Build a CI Pipeline that clones, lints, tests on two images with a matrix, scans, builds and pushes an image
+          - Deploy only from main with a when expression and report every run from a finally task
+          - Prove the graph, the image in the registry and the failure report with PipelineRuns on three branches
+        resources:
+          - name: "Pipelines"
+            url: https://tekton.dev/docs/pipelines/pipelines/
+          - name: "Matrix"
+            url: https://tekton.dev/docs/pipelines/matrix/
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-030/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Broken CI Pipeline Capstone"
+        path: sections/section-030/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 45m
+        topic: ci-pipeline
+        task_kind: troubleshooting
+        tags: [cluster-resolver, matrix, when-expressions, finally, notifications, conditional-deploy, image-build]
+        learning_goals:
+          - Find why a CI PipelineRun fails or misbehaves from its condition, its skipped tasks and its TaskRuns
+          - Fix a cluster resolver reference, a matrix parameter, a when expression and a finally task that never reports a failure
+          - Prove the deploy rule, the image in the registry and the failure report with PipelineRuns
+        resources:
+          - name: "Cluster resolver"
+            url: https://tekton.dev/docs/pipelines/cluster-resolver/
+          - name: "Matrix"
+            url: https://tekton.dev/docs/pipelines/matrix/
+          - name: "Pipelines"
+            url: https://tekton.dev/docs/pipelines/pipelines/

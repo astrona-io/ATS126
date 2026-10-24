@@ -1,0 +1,47 @@
+# The fixed Pipeline: report uses the result manifest-id, and count waits
+# for write with runAfter because it reads the file write creates.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: launch-check
+  namespace: starfleet
+spec:
+  params:
+    - name: crew
+      type: string
+      default: "bridge scout shuttle"
+    - name: release
+      type: string
+  workspaces:
+    - name: shared
+  results:
+    - name: summary
+      value: $(tasks.report.results.summary)
+  tasks:
+    - name: write
+      taskRef:
+        name: write-manifest
+      params:
+        - name: crew
+          value: $(params.crew)
+        - name: release
+          value: $(params.release)
+      workspaces:
+        - name: shared
+          workspace: shared
+    - name: count
+      runAfter:
+        - write
+      taskRef:
+        name: count-crew
+      workspaces:
+        - name: shared
+          workspace: shared
+    - name: report
+      taskRef:
+        name: report
+      params:
+        - name: manifest-id
+          value: $(tasks.write.results.manifest-id)
+        - name: count
+          value: $(tasks.count.results.count)

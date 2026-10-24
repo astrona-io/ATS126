@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: ship-feature
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: ship
+  params:
+    - name: branch
+      value: feature/radar

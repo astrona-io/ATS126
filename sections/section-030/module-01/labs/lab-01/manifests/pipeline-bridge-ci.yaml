@@ -1,0 +1,40 @@
+# The Pipeline the lab starts with: it only clones and lints. Completing it
+# is the task.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: bridge-ci
+  namespace: starfleet
+spec:
+  params:
+    - name: repo-url
+      type: string
+      default: http://gitea-http.gitea.svc.cluster.local:3000/starfleet/bridge.git
+    - name: branch
+      type: string
+      default: main
+    - name: image
+      type: string
+      default: registry.registry.svc.cluster.local:5000/starfleet/bridge
+  workspaces:
+    - name: source
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.branch)
+      workspaces:
+        - name: output
+          workspace: source
+    - name: lint
+      runAfter:
+        - clone
+      taskRef:
+        name: shellcheck
+      workspaces:
+        - name: source
+          workspace: source

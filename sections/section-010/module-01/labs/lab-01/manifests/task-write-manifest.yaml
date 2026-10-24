@@ -1,0 +1,33 @@
+# Writes one line per crew member to manifest.txt in the workspace and
+# publishes the result manifest-id. The sleep stands in for slow work, such
+# as a download, so a task that reads the file too early finds nothing.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: write-manifest
+  namespace: starfleet
+spec:
+  params:
+    - name: crew
+      type: string
+      description: Space-separated crew names
+    - name: release
+      type: string
+      description: The release the manifest is for
+  workspaces:
+    - name: shared
+  results:
+    - name: manifest-id
+      description: The identifier of the manifest
+  steps:
+    - name: write
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        sleep 10
+        : > "$(workspaces.shared.path)/manifest.txt"
+        for member in $(params.crew); do
+          echo "$member" >> "$(workspaces.shared.path)/manifest.txt"
+        done
+        printf '%s-manifest' "$(params.release)" | tee "$(results.manifest-id.path)"

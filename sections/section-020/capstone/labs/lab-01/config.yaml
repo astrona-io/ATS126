@@ -1,0 +1,56 @@
+# Make A Nightly Pipeline Reliable (section 020 capstone)
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-capstone-020"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-capstone-020-setup"
+      description: "Applies the nightly Tasks, the Pipeline with four faults and the PipelineRun nightly-run, and waits until the run has failed"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-pipeline-spec"
+      description: "Confirms retries on warm-cache, a 1m to 5m timeout on integration, onError continue on docs-check, and a report without results"
+      type: "file"
+      source: "validation/validate-pipeline-spec.sh"
+    - name: "validate-nightly-run"
+      description: "Confirms nightly-run succeeded with a retried warm-cache, an ignored docs-check and the report 'integration=Succeeded docs=Failed'"
+      type: "file"
+      source: "validation/validate-nightly-run.sh"
+    - name: "validate-failure-report"
+      description: "Runs the Pipeline with failing tests and confirms the report 'integration=Failed docs=Failed'"
+      type: "file"
+      source: "validation/validate-failure-report.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

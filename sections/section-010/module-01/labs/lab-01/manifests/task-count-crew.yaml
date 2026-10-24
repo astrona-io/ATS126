@@ -1,0 +1,24 @@
+# Counts the lines of manifest.txt in the workspace and publishes the count.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: count-crew
+  namespace: starfleet
+spec:
+  workspaces:
+    - name: shared
+  results:
+    - name: count
+      description: How many crew members the manifest lists
+  steps:
+    - name: count
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        file="$(workspaces.shared.path)/manifest.txt"
+        if [ ! -f "$file" ]; then
+          echo "manifest.txt is not in the workspace yet" >&2
+          exit 1
+        fi
+        printf '%s' "$(wc -l < "$file" | tr -d ' ')" | tee "$(results.count.path)"

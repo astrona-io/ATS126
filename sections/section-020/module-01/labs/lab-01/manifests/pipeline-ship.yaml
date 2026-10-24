@@ -1,0 +1,29 @@
+# The Pipeline the lab starts with. It deploys from every branch and reports
+# nothing. Adding the guard and the finally task is the task.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: ship
+  namespace: starfleet
+spec:
+  params:
+    - name: branch
+      type: string
+    - name: fail
+      type: string
+      default: "false"
+  tasks:
+    - name: build
+      taskRef:
+        name: build-app
+      params:
+        - name: branch
+          value: $(params.branch)
+        - name: fail
+          value: $(params.fail)
+    - name: deploy
+      taskRef:
+        name: deploy-app
+      params:
+        - name: image
+          value: $(tasks.build.results.image)

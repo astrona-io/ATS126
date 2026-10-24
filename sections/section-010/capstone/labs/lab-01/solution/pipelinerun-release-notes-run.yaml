@@ -1,0 +1,21 @@
+# The PipelineRun, created again with the workspace name the Pipeline declares.
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: release-notes-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: release-notes
+  params:
+    - name: version
+      value: v1.4
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 16Mi

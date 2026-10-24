@@ -1,0 +1,68 @@
+# Build An End-To-End CI Pipeline
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-lab-030-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-lab-030-01-setup"
+      description: "Starts Gitea, the registry and the tester pod, seeds starfleet/bridge with three branches, and applies ci-bot, the CI Tasks and the starting Pipeline"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet, Gitea, the registry and the tester pod"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until Tekton, Gitea and the registry are ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The work a correct learner does; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-main-run"
+      description: "Confirms bridge-ci-main succeeded and followed the CI graph with a two-image test matrix, a deploy after build and a finally notify"
+      type: "file"
+      source: "validation/validate-main-run.sh"
+    - name: "validate-image-and-release"
+      description: "Confirms the image of the main head commit is in the registry and recorded in bridge-release"
+      type: "file"
+      source: "validation/validate-image-and-release.sh"
+    - name: "validate-feature-run"
+      description: "Confirms bridge-ci-feature built without deploying and both runs were notified with the right status"
+      type: "file"
+      source: "validation/validate-feature-run.sh"
+    - name: "validate-failure-notified"
+      description: "Runs the Pipeline on the branch broken and confirms it fails in lint, builds nothing and is still notified"
+      type: "file"
+      source: "validation/validate-failure-notified.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0
+      - alpine:3.22.7
+      - alpine/git:v2.49.1
+      - koalaman/shellcheck-alpine:v0.11.0
+      - ghcr.io/osscontainertools/kaniko:v1.28.5-debug
+      - alpine/kubectl:1.34.2
+      - gitea/gitea:28.2.0-rootless
+      - registry:3.0.0
+      - nicolaka/netshoot:v0.13

@@ -1,0 +1,38 @@
+# Fan Out And Build A CI Pipeline (PLAYGROUND) — Playground environment
+# A clean sandbox: it spins up, runs OS prep, then stays running for free
+# exploration. No task, no grading, no `astrona submit`.
+# Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-playground-030-01"
+  docs:
+    guide: "docs/overview.md"
+bootstrap:
+  init:
+    - name: "prepare"
+      description: "Install the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and wait until the webhook answers."
+      type: "file"
+      source: "bootstrap/prepare.sh"
+    - name: "seed"
+      description: "Start Gitea, the registry and the tester pod, seed the repositories starfleet/bridge and starfleet/tekton-catalog, and apply ci-bot and the CI Tasks."
+      type: "file"
+      source: "bootstrap/seed.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet, Gitea, the registry and the tester pod."
+      type: "file"
+      source: "manifests/lab-start.yaml"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0
+      - alpine:3.22.7
+      - alpine/git:v2.49.1
+      - koalaman/shellcheck-alpine:v0.11.0
+      - ghcr.io/osscontainertools/kaniko:v1.28.5-debug
+      - alpine/kubectl:1.34.2
+      - gitea/gitea:28.2.0-rootless
+      - registry:3.0.0
+      - nicolaka/netshoot:v0.13

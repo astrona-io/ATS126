@@ -1,0 +1,22 @@
+# The PipelineRun the capstone starts with. It has a fault: it binds a
+# workspace named "notes", but the Pipeline declares "source".
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: release-notes-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: release-notes
+  params:
+    - name: version
+      value: v1.4
+  workspaces:
+    - name: notes
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 16Mi

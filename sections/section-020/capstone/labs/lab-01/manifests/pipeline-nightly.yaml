@@ -1,0 +1,43 @@
+# The Pipeline the capstone starts with. It has four faults:
+#  - warm-cache has no retries, so its first, failing attempt fails the run;
+#  - integration has a 10s timeout, but the tests take about 20 seconds;
+#  - docs-check fails the run, although the team accepts that failure;
+#  - the finally task report consumes a result of integration, so it is
+#    skipped whenever integration fails or is skipped.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: nightly
+  namespace: starfleet
+spec:
+  params:
+    - name: break
+      type: string
+      default: "false"
+  tasks:
+    - name: warm-cache
+      taskRef:
+        name: warm-cache
+    - name: integration
+      runAfter:
+        - warm-cache
+      timeout: 10s
+      taskRef:
+        name: integration
+      params:
+        - name: break
+          value: $(params.break)
+    - name: docs-check
+      runAfter:
+        - warm-cache
+      taskRef:
+        name: docs-check
+  finally:
+    - name: report
+      taskRef:
+        name: report
+      params:
+        - name: integration
+          value: $(tasks.integration.results.summary)
+        - name: docs
+          value: $(tasks.docs-check.status)
