@@ -391,7 +391,10 @@ needs the network even when the image is preloaded on the node.
 - **Retries:** the TaskRun keeps its name; each earlier attempt moves to
   `status.retriesStatus`, the reason is `ToBeRetried` in between, and the new
   pod is `<taskrun>-pod-retry1`. `$(context.task.retry-count)` in a step gives
-  the attempt number (0 for the first). `retries` and `onError: continue`
+  the attempt number (0 for the first) only for an embedded `taskSpec`; in a
+  Task used through `taskRef` it is `0` in every attempt (seen live on
+  v1.17.1). The `nightly` capstone's `warm-cache` therefore checks its pod
+  name (`HOSTNAME` ends in `-retryN`). `retries` and `onError: continue`
   cannot be set on the same task.
 - **Timeouts:** `timeouts.pipeline`, `timeouts.tasks`, `timeouts.finally` on
   the PipelineRun (`pipeline >= tasks + finally`), `timeout` on a pipeline

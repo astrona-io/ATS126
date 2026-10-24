@@ -14,7 +14,7 @@ kubectl get taskruns -n starfleet -l tekton.dev/pipelineRun=nightly-run -o custo
 kubectl logs nightly-run-warm-cache-pod -n starfleet -c step-download
 ```
 
-The run `Failed`. `warm-cache` ended with `StepFailed`, and its log says `Attempt number 0` and `The cache mirror did not answer`. `integration` and `docs-check` are skipped with `PipelineRun was stopping`. The `finally` task `report` is skipped too, with `Results were missing`: it needs the result `summary` of `integration`, which never ran. That is two faults already: `warm-cache` needs a second attempt, and `report` must not depend on a result.
+The run `Failed`. `warm-cache` ended with `StepFailed`, and its log says `Running in pod nightly-run-warm-cache-pod` and `The cache mirror did not answer`. The Task fails in every pod whose name does not end in `-retry1` or higher, so only a retry gets past it. `integration` and `docs-check` are skipped with `PipelineRun was stopping`. The `finally` task `report` is skipped too, with `Results were missing`: it needs the result `summary` of `integration`, which never ran. That is two faults already: `warm-cache` needs a second attempt, and `report` must not depend on a result.
 
 ## Step 2: Fix the Pipeline step by step
 
@@ -140,5 +140,5 @@ astrona submit -c sections/section-020/capstone/labs/lab-01
 ## Practice on your own
 
 - Add `timeouts: {pipeline: 2m, tasks: 90s, finally: 30s}` to the run and predict which limit `integration` hits first if its tests took 100 seconds.
-- Print `$(context.task.retry-count)` in a step of `integration` and run it with `retries: 2` and `break=true`. How many pods does it get?
+- Run `integration` with `retries: 2` and `break=true`. How many pods does it get, and what are their names?
 - Add `$(tasks.status)` to the report and explain why it says `Failed` on a successful run.

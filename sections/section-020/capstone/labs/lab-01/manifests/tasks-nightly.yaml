@@ -12,13 +12,15 @@ spec:
       script: |
         #!/bin/sh
         # The first attempt of every run fails, like a mirror that answers
-        # only after a first request has woken it up.
-        echo "Attempt number $(context.task.retry-count)"
-        if [ "$(context.task.retry-count)" = "0" ]; then
-          echo "The cache mirror did not answer" >&2
-          exit 1
-        fi
-        echo "The cache is warm"
+        # only after a first request has woken it up. A retry runs in a new
+        # pod whose name ends in -retry1, -retry2 and so on. The pod name is
+        # in HOSTNAME. ($(context.task.retry-count) stays 0 in a Task used
+        # through taskRef in Tekton Pipelines v1.17.1, so it is not used here.)
+        echo "Running in pod $HOSTNAME"
+        case "$HOSTNAME" in
+          *-retry[0-9]*) echo "The cache is warm" ;;
+          *) echo "The cache mirror did not answer" >&2; exit 1 ;;
+        esac
 ---
 apiVersion: tekton.dev/v1
 kind: Task

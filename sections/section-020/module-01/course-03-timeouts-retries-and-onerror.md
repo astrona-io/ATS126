@@ -4,7 +4,7 @@ Real tasks fail for reasons that have nothing to do with the code under test. A 
 
 ## Retry a flaky task
 
-`retries` on a pipeline task is the number of extra attempts after a failure. When the TaskRun fails, the controller does not create a new TaskRun. It keeps the same TaskRun, moves the status of the failed attempt into `status.retriesStatus`, sets the reason `ToBeRetried` for a moment, and starts a new pod named `<taskrun>-pod-retry1`, then `-retry2`, and so on. Inside a step, `$(context.task.retry-count)` gives the number of the current attempt: `0` for the first, `1` for the first retry.
+`retries` on a pipeline task is the number of extra attempts after a failure. When the TaskRun fails, the controller does not create a new TaskRun. It keeps the same TaskRun, moves the status of the failed attempt into `status.retriesStatus`, sets the reason `ToBeRetried` for a moment, and starts a new pod named `<taskrun>-pod-retry1`, then `-retry2`, and so on. Inside a step of an embedded `taskSpec`, `$(context.task.retry-count)` gives the number of the current attempt: `0` for the first, `1` for the first retry. In a Task used through `taskRef`, Tekton Pipelines v1.17.1 gives `0` in every attempt, so there a step must read its pod name (in `HOSTNAME`) to tell a retry apart.
 
 The task `flaky` below uses that variable to fail on its first attempt only, so you can watch a retry without waiting for bad luck. The Pipeline also has a task `docs-check` that always fails, with `onError: continue`, which you will read about in a moment.
 
@@ -155,6 +155,7 @@ You can now give a flaky task a second chance, let a known failure pass without 
 
 > [!WARNING]
 > - **Looking for a second TaskRun after a retry.** A retry reuses the TaskRun; the earlier attempts are in `status.retriesStatus`, the pods end in `-retry1`, `-retry2`.
+> - **Reading `$(context.task.retry-count)` in a referenced Task.** With `taskRef` it stays `0` in every attempt in v1.17.1; only an embedded `taskSpec` gets the real count.
 > - **Using `retries` for a failure that always happens.** Retries only cost time; use `onError: continue` for a known failure, or fix it.
 > - **Setting `retries` and `onError: continue` together.** The webhook rejects that combination.
 > - **Reading `FailureIgnored` as success.** The TaskRun is still `False`, and execution status reports it as `Failed`.
