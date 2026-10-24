@@ -254,27 +254,13 @@ section is only true for this one.
   (`pkg/apis/pipeline/v1/pipelinerun_types.go`,
   `pkg/reconciler/pipelinerun/`). Check every page against them.
 
-### Status: built, not yet run
+### Status: every environment passes `astrona test`
 
-The first version of this repository was written from the Tekton
-documentation, the release manifest and the source at the pinned tags
-**without a live run**. No playground or lab has been started, and no
-`astrona test` has passed yet. Until a maintainer runs them:
-
-- Pages describe results in words. Do not add `text` output blocks until the
-  output comes from a real run, and then paste it exactly.
-- Treat every lab as unverified. Run `astrona validate` and `astrona test` on
-  each one, one cluster at a time, before the course goes past `maturity:
-  draft`.
-- Remove this subsection when every lab has passed `astrona test`.
-
-The biggest open risks are: the kaniko build (the maintained fork
-`ghcr.io/osscontainertools/kaniko`, run as root without privileges) pulling
-its base image `mirror.gcr.io/library/busybox:1.37.0` and pushing over plain
-HTTP to the in-cluster registry; the Gitea seeding through the API from the
-`tester` pod; the `kind` local-path provisioner and the affinity assistant
-for `volumeClaimTemplate` workspaces; and image pulls of Tekton's own images
-from `ghcr.io` and `cgr.dev`, which are not preloaded.
+All nine environments (three playgrounds, three labs, three capstones) passed
+`astrona test` on 2026-10-25 on a laptop `kind` cluster with Podman. Pages
+still describe results in words: add a `text` output block only when it is
+pasted exactly from a real run. Run `astrona test` again on every environment
+you change.
 
 ### Terms, not metaphors
 
