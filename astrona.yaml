@@ -34,8 +34,6 @@ training:
     name: Tekton
     code: TEKTON
     provider: Astrona
-    domain: "Pipelines, Task Graphs & Custom Tasks"
-    weight: 25
 
 modules:
 
