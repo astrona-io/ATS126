@@ -1,0 +1,290 @@
+# Knowledge check for section 010. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats126-010
+course_id: ATS126
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: section
+  id: section-010
+  title: Pipelines And The Task Graph
+placement:
+  position: after
+  reading: sections/section-010/capstone/labs/lab-01/question.md
+questions:
+- id: ats126-010-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain what a Task declares for a workspace
+  source_readings:
+  - sections/section-010/module-01/course-01-pipelines-pipelineruns-and-workspaces.md
+  prompt: 'A Task declares `workspaces: [{name: shared}]`. What does the Task know
+    about the volume behind `shared`?'
+  options:
+  - id: a
+    text: Only its name. The PipelineRun decides which volume is mounted there.
+    explanation: Correct. The Task only names the volume and uses its path. The run
+      binds the real volume.
+  - id: b
+    text: The name of the PersistentVolumeClaim (PVC) it must use.
+    explanation: Not correct. A Task never names a PVC. This keeps one Task usable
+      by many Pipelines.
+  - id: c
+    text: The storage size and the access mode of the volume.
+    explanation: Not correct. Size and access mode belong to the volume claim in the
+      PipelineRun.
+  - id: d
+    text: That it is an `emptyDir` volume shared by all TaskRuns.
+    explanation: Not correct. An `emptyDir` lives in one pod, and the Task does not
+      choose the volume type.
+  correct_option: a
+  explanation: Correct. The Task only names the volume and uses its path. The run
+    binds the real volume.
+- id: ats126-010-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Map a Pipeline workspace to a Task workspace
+  source_readings:
+  - sections/section-010/module-01/course-01-pipelines-pipelineruns-and-workspaces.md
+  prompt: 'A pipeline task has the entry `name: shared` and `workspace: files` under
+    `workspaces`. What does it mean?'
+  options:
+  - id: a
+    text: Mount the Task's workspace `files` where the Pipeline expects `shared`.
+    explanation: Not correct. The two fields are the other way round. `name` belongs
+      to the Task.
+  - id: b
+    text: Mount the Pipeline's workspace `files` where the Task expects its workspace
+      `shared`.
+    explanation: Correct. `name` is the Task's workspace and `workspace` is the Pipeline's
+      workspace.
+  - id: c
+    text: Create two new volumes, one named `shared` and one named `files`.
+    explanation: Not correct. The entry creates no volume. The PipelineRun binds the
+      volume.
+  - id: d
+    text: Copy the files of `shared` into `files` after the task ends.
+    explanation: Not correct. Nothing is copied. Both names point to the same mounted
+      volume.
+  correct_option: b
+  explanation: Correct. `name` is the Task's workspace and `workspace` is the Pipeline's
+    workspace.
+- id: ats126-010-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Tell which links order the tasks of a Pipeline
+  source_readings:
+  - sections/section-010/module-01/course-03-order-tasks-into-a-graph.md
+  prompt: The pipeline tasks `writer` and `reader` use the same workspace. `writer`
+    writes a file and `reader` reads it. Neither has `runAfter` and neither uses a
+    result of the other. What does Tekton do?
+  options:
+  - id: a
+    text: It starts `writer` first, because the workspace is shared.
+    explanation: Not correct. A shared workspace does not order tasks.
+  - id: b
+    text: It starts them in the order of `spec.tasks`.
+    explanation: Not correct. The order in `spec.tasks` means nothing. Only the edges
+      count.
+  - id: c
+    text: It starts both at the same time, so `reader` may look before `writer` has
+      written.
+    explanation: Correct. A shared workspace is not an edge of the graph. Only `runAfter`
+      and result references are.
+  - id: d
+    text: It rejects the Pipeline when you apply it.
+    explanation: Not correct. The webhook accepts this Pipeline. The fault shows at
+      run time.
+  correct_option: c
+  explanation: Correct. A shared workspace is not an edge of the graph. Only `runAfter`
+    and result references are.
+- id: ats126-010-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain what a volumeClaimTemplate does
+  source_readings:
+  - sections/section-010/module-01/course-01-pipelines-pipelineruns-and-workspaces.md
+  prompt: A PipelineRun binds a workspace with a `volumeClaimTemplate`. What happens
+    for each run?
+  options:
+  - id: a
+    text: All runs share one PVC that the controller creates once.
+    explanation: Not correct. A template gives a fresh claim per run, not one shared
+      claim.
+  - id: b
+    text: The controller mounts an `emptyDir` in every TaskRun.
+    explanation: Not correct. An `emptyDir` is a different workspace type and is not
+      shared between pods.
+  - id: c
+    text: The controller reuses the PVC with the same name from the last run.
+    explanation: Not correct. The claim has a generated name and is deleted with its
+      run.
+  - id: d
+    text: The controller creates one new PVC from the template, and Kubernetes deletes
+      it with the run.
+    explanation: Correct. Each run gets its own claim, owned by the PipelineRun.
+  correct_option: d
+  explanation: Correct. Each run gets its own claim, owned by the PipelineRun.
+- id: ats126-010-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Write a result reference between pipeline tasks
+  source_readings:
+  - sections/section-010/module-01/course-02-results-between-tasks.md
+  prompt: The pipeline task `pick` runs the Task `pick-crew`, which has the result
+    `captain`. Which reference gives that result to another pipeline task?
+  options:
+  - id: a
+    text: "`$(tasks.pick-crew.results.captain)`"
+    explanation: Not correct. `pick-crew` is the Task name. The reference uses the
+      pipeline task name.
+  - id: b
+    text: "`$(tasks.pick.results.captain)`"
+    explanation: Correct. The first name is the pipeline task name, not the Task name.
+  - id: c
+    text: "`$(pick.results.captain)`"
+    explanation: Not correct. The reference must start with `tasks.`.
+  - id: d
+    text: "`$(results.captain)`"
+    explanation: Not correct. `$(results.captain.path)` is used inside the Task to
+      write the result, not to read it.
+  correct_option: b
+  explanation: Correct. The first name is the pipeline task name, not the Task name.
+- id: ats126-010-q06
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Find where a pipeline result is stored
+  source_readings:
+  - sections/section-010/module-01/course-02-results-between-tasks.md
+  prompt: 'A Pipeline declares a pipeline result under `spec.results`. In an object
+    of `apiVersion: tekton.dev/v1`, where does the PipelineRun show it?'
+  options:
+  - id: a
+    text: In `status.pipelineResults`.
+    explanation: Not correct. `status.pipelineResults` is the name in older `v1beta1`
+      material.
+  - id: b
+    text: In `spec.results`.
+    explanation: Not correct. `spec.results` is where the Pipeline declares the result,
+      not where the value appears.
+  - id: c
+    text: In `status.results`.
+    explanation: Correct. The controller copies each pipeline result into `status.results`
+      when the run ends.
+  - id: d
+    text: In the labels of the PipelineRun.
+    explanation: Not correct. Labels hold identifiers, not result values.
+  correct_option: c
+  explanation: Correct. The controller copies each pipeline result into `status.results`
+    when the run ends.
+- id: ats126-010-q07
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Read the failure of a misspelled result reference
+  source_readings:
+  - sections/section-010/module-01/course-02-results-between-tasks.md
+  prompt: A PipelineRun refers to `$(tasks.pick.results.capitan)`, but the Task `pick-crew`
+    only has the result `captain`. What do you see?
+  options:
+  - id: a
+    text: "`kubectl apply` is rejected by the webhook."
+    explanation: Not correct. The webhook only checks that the pipeline task `pick`
+      exists.
+  - id: b
+    text: The `pick` TaskRun fails and its pod log shows the error.
+    explanation: Not correct. The run fails before any TaskRun and pod exist, so there
+      is no log.
+  - id: c
+    text: The run succeeds and the parameter is an empty string.
+    explanation: Not correct. An unresolvable reference fails the run. It never becomes
+      an empty string.
+  - id: d
+    text: The run fails with the reason `InvalidTaskResultReference` and no TaskRun
+      exists.
+    explanation: Correct. The controller loads the Task and checks the result name
+      before it creates any TaskRun.
+  correct_option: d
+  explanation: Correct. The controller loads the Task and checks the result name before
+    it creates any TaskRun.
+- id: ats126-010-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Choose between results and workspaces
+  source_readings:
+  - sections/section-010/module-01/course-02-results-between-tasks.md
+  prompt: A task must hand a 2 MB report to the next task. All results of one TaskRun
+    share about 4 KB. What is the right way?
+  options:
+  - id: a
+    text: Write the report into a workspace and pass only its path or hash as a result.
+    explanation: Correct. Files belong in a workspace. Results carry small values.
+  - id: b
+    text: Write the report as a result with `printf '%s'`.
+    explanation: Not correct. `printf` avoids a newline but does not remove the size
+      limit.
+  - id: c
+    text: Split the report into many results of 4 KB each.
+    explanation: Not correct. The limit is for all results of the TaskRun together.
+  - id: d
+    text: Raise the result size with `runAfter`.
+    explanation: Not correct. `runAfter` orders tasks. It has no effect on result
+      size.
+  correct_option: a
+  explanation: Correct. Files belong in a workspace. Results carry small values.
+- id: ats126-010-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Predict what happens to other tasks when one task fails
+  source_readings:
+  - sections/section-010/module-01/course-03-order-tasks-into-a-graph.md
+  prompt: In a running PipelineRun, one pipeline task fails. Other tasks are already
+    running, and some have not started. What does the controller do?
+  options:
+  - id: a
+    text: It cancels all running tasks at once.
+    explanation: Not correct. Running tasks are not cancelled. They finish.
+  - id: b
+    text: It starts the remaining tasks, because they are independent.
+    explanation: Not correct. After a failure, tasks that have not started do not
+      start.
+  - id: c
+    text: Running tasks finish, and tasks that have not started are skipped with the
+      reason `PipelineRun was stopping`.
+    explanation: Correct. The run is stopping, so only tasks that have not started
+      are skipped.
+  - id: d
+    text: It retries the failed task until the run times out.
+    explanation: Not correct. Without a `retries` field there is no retry.
+  correct_option: c
+  explanation: Correct. The run is stopping, so only tasks that have not started are
+    skipped.
+- id: ats126-010-q10
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Read the reason of a run that failed before any TaskRun
+  source_readings:
+  - sections/section-010/module-01/course-03-order-tasks-into-a-graph.md
+  prompt: A PipelineRun does not bind a workspace that its Pipeline declares. Which
+    reason does it get, and are there TaskRuns?
+  options:
+  - id: a
+    text: The reason `InvalidWorkspaceBindings`, and no TaskRun exists.
+    explanation: Correct. The controller validates the bindings before it creates
+      the first TaskRun.
+  - id: b
+    text: The reason `ParameterMissing`, and one TaskRun exists.
+    explanation: Not correct. `ParameterMissing` is for a Pipeline parameter without
+      a value.
+  - id: c
+    text: The reason `Failed`, and all TaskRuns exist.
+    explanation: Not correct. `Failed` is the reason after a task failed, and then
+      TaskRuns exist.
+  - id: d
+    text: The reason `CouldntGetTask`, and no TaskRun exists.
+    explanation: Not correct. `CouldntGetTask` means a referenced Task does not exist.
+  correct_option: a
+  explanation: Correct. The controller validates the bindings before it creates the
+    first TaskRun.

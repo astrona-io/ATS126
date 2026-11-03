@@ -132,6 +132,11 @@ modules:
             url: https://tekton.dev/docs/pipelines/pipelines/
           - name: "Workspaces"
             url: https://tekton.dev/docs/pipelines/workspaces/
+      - type: quiz
+        title: "Knowledge Check: Pipelines And The Task Graph"
+        path: sections/section-010/quiz.yaml
+        pass_score: 70
+
 
   - id: module-020
     title: "Control Flow With When, Finally, Timeouts And Retries"
@@ -207,6 +212,11 @@ modules:
             url: https://tekton.dev/docs/pipelines/pipelineruns/
           - name: "Variable substitutions"
             url: https://tekton.dev/docs/pipelines/variables/
+      - type: quiz
+        title: "Knowledge Check: Control Flow With When, Finally, Timeouts And Retries"
+        path: sections/section-020/quiz.yaml
+        pass_score: 70
+
 
   - id: module-030
     title: "Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline"
@@ -283,3 +293,11 @@ modules:
             url: https://tekton.dev/docs/pipelines/matrix/
           - name: "Pipelines"
             url: https://tekton.dev/docs/pipelines/pipelines/
+      - type: quiz
+        title: "Knowledge Check: Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline"
+        path: sections/section-030/quiz.yaml
+        pass_score: 70
+      - type: quiz
+        title: "Final Domain Quiz"
+        path: sections/final-domain-quiz.yaml
+        pass_score: 70

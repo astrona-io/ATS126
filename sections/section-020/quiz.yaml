@@ -1,0 +1,269 @@
+# Knowledge check for section 020. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats126-020
+course_id: ATS126
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: section
+  id: section-020
+  title: Control Flow With When, Finally, Timeouts And Retries
+placement:
+  position: after
+  reading: sections/section-020/capstone/labs/lab-01/question.md
+questions:
+- id: ats126-020-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain when a guarded task runs
+  source_readings:
+  - sections/section-020/module-01/course-01-guard-tasks-with-when.md
+  prompt: A pipeline task has two expressions under `when`. When does the controller
+    create its TaskRun?
+  options:
+  - id: a
+    text: When at least one expression is true.
+    explanation: Not correct. The expressions are combined with AND, not OR.
+  - id: b
+    text: Only when both expressions are true.
+    explanation: Correct. All `when` expressions of a pipeline task must be true.
+  - id: c
+    text: When the first expression is true. The others are ignored.
+    explanation: Not correct. Every expression is checked.
+  - id: d
+    text: Always. `when` only adds a label to the TaskRun.
+    explanation: Not correct. When the guard is false, the controller does not create
+      the TaskRun.
+  correct_option: b
+  explanation: Correct. All `when` expressions of a pipeline task must be true.
+- id: ats126-020-q02
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Predict which tasks run after a skipped task
+  source_readings:
+  - sections/section-020/module-01/course-01-guard-tasks-with-when.md
+  prompt: "`deploy` is skipped by its `when` expression. `smoke` has only `runAfter:
+    [deploy]`. `announce` uses `$(tasks.deploy.results.url)`. What happens to them?"
+  options:
+  - id: a
+    text: Both run, and `announce` gets an empty `url`.
+    explanation: Not correct. `announce` needs a result that does not exist, so it
+      is skipped.
+  - id: b
+    text: Both are skipped, because `deploy` was skipped.
+    explanation: Not correct. `runAfter` alone does not skip `smoke`.
+  - id: c
+    text: "`smoke` runs. `announce` is skipped with the reason `Results were missing`."
+    explanation: Correct. A skipped task stops only the tasks that need its results.
+  - id: d
+    text: "`smoke` is skipped and `announce` runs."
+    explanation: Not correct. The two tasks behave the other way round.
+  correct_option: c
+  explanation: Correct. A skipped task stops only the tasks that need its results.
+- id: ats126-020-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Read the condition of a run with a skipped task
+  source_readings:
+  - sections/section-020/module-01/course-01-guard-tasks-with-when.md
+  prompt: All tasks that ran succeeded, and one task was skipped. What are the `Succeeded`
+    condition and its reason?
+  options:
+  - id: a
+    text: "`Succeeded` is `False` and the reason is `Completed`."
+    explanation: Not correct. `Completed` is not a failure. The condition is `True`.
+  - id: b
+    text: "`Succeeded` is `True` and the reason is `Skipped`."
+    explanation: Not correct. Tekton has no reason `Skipped` for a run. It uses `Completed`.
+  - id: c
+    text: "`Succeeded` is `Unknown` until the skipped task is run."
+    explanation: Not correct. The run has ended, so the condition is final.
+  - id: d
+    text: "`Succeeded` is `True` and the reason is `Completed`."
+    explanation: Correct. `Completed` means success with at least one skipped task.
+  correct_option: d
+  explanation: Correct. `Completed` means success with at least one skipped task.
+- id: ats126-020-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Use CEL in a when expression
+  source_readings:
+  - sections/section-020/module-01/course-01-guard-tasks-with-when.md
+  prompt: A Pipeline uses `cel` in a `when` expression, and the feature flag is not
+    set. What happens at `kubectl apply`?
+  options:
+  - id: a
+    text: The webhook rejects the Pipeline and says `enable-cel-in-whenexpression`
+      must be true.
+    explanation: Correct. CEL in `when` is alpha in v1.17.1 and needs the flag in
+      the ConfigMap `feature-flags`.
+  - id: b
+    text: The Pipeline is stored and the expression is ignored.
+    explanation: Not correct. The webhook checks the flag when you apply the Pipeline.
+  - id: c
+    text: The Pipeline is stored and the run fails with `CELEvaluationFailed`.
+    explanation: Not correct. `CELEvaluationFailed` is for an expression that fails
+      at run time, with the flag on.
+  - id: d
+    text: The controller turns the flag on by itself.
+    explanation: Not correct. The controller never changes a feature flag.
+  correct_option: a
+  explanation: Correct. CEL in `when` is alpha in v1.17.1 and needs the flag in the
+    ConfigMap `feature-flags`.
+- id: ats126-020-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain when finally tasks start
+  source_readings:
+  - sections/section-020/module-01/course-02-finally-tasks-and-execution-status.md
+  prompt: When does the controller start the tasks under `finally`?
+  options:
+  - id: a
+    text: One by one, in the order of `runAfter`.
+    explanation: Not correct. A `finally` task cannot have `runAfter`.
+  - id: b
+    text: As soon as the first task under `tasks` starts.
+    explanation: Not correct. They wait until all tasks under `tasks` have finished.
+  - id: c
+    text: Only when every task under `tasks` succeeded.
+    explanation: Not correct. They also run after a failure. That is their purpose.
+  - id: d
+    text: All at the same time, after every task under `tasks` has succeeded, failed
+      or been skipped.
+    explanation: Correct. `finally` tasks have no `runAfter`. They start together
+      at the end.
+  correct_option: d
+  explanation: Correct. `finally` tasks have no `runAfter`. They start together at
+    the end.
+- id: ats126-020-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Read the end state of a run whose finally task succeeded
+  source_readings:
+  - sections/section-020/module-01/course-02-finally-tasks-and-execution-status.md
+  prompt: A task under `tasks` fails. The `finally` task `report` runs and succeeds.
+    How does the PipelineRun end?
+  options:
+  - id: a
+    text: "`Succeeded` is `False` and the reason is `Failed`."
+    explanation: Correct. A `finally` task does not turn a failure into a success.
+  - id: b
+    text: "`Succeeded` is `True` and the reason is `Completed`."
+    explanation: Not correct. `Completed` is only for success with skipped tasks.
+  - id: c
+    text: "`Succeeded` is `True` and the reason is `Succeeded`."
+    explanation: Not correct. The run has a failed task, so it cannot succeed.
+  - id: d
+    text: "`Succeeded` is `Unknown` because `finally` ran after the failure."
+    explanation: Not correct. When all tasks have ended, the condition is `True` or
+      `False`.
+  correct_option: a
+  explanation: Correct. A `finally` task does not turn a failure into a success.
+- id: ats126-020-q07
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Avoid results in a finally task that must always run
+  source_readings:
+  - sections/section-020/module-01/course-02-finally-tasks-and-execution-status.md
+  prompt: A `finally` task takes `$(tasks.work.results.answer)` as a parameter. The
+    task `work` fails before it writes `answer`. What happens to the `finally` task?
+  options:
+  - id: a
+    text: It runs with an empty parameter.
+    explanation: Not correct. The controller does not pass an empty value for a missing
+      result.
+  - id: b
+    text: The controller skips it with the reason `Results were missing`.
+    explanation: Correct. Without the result, the parameter cannot be filled in. Use
+      only parameters and execution status there.
+  - id: c
+    text: It runs and the step fails.
+    explanation: Not correct. No TaskRun is created, so no step runs.
+  - id: d
+    text: The webhook rejects the Pipeline.
+    explanation: Not correct. The Pipeline is valid. The fault shows at run time.
+  correct_option: b
+  explanation: Correct. Without the result, the parameter cannot be filled in. Use
+    only parameters and execution status there.
+- id: ats126-020-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain how a retry is recorded
+  source_readings:
+  - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
+  prompt: 'A pipeline task has `retries: 2`. Its first attempt fails and the second
+    attempt succeeds. What do you find?'
+  options:
+  - id: a
+    text: Two TaskRuns, one for each attempt.
+    explanation: Not correct. A retry reuses the TaskRun.
+  - id: b
+    text: One TaskRun and one pod, because the pod is restarted.
+    explanation: Not correct. Each attempt gets its own pod.
+  - id: c
+    text: One TaskRun, the failed attempt in `status.retriesStatus`, and a second
+      pod ending in `-retry1`.
+    explanation: Correct. The controller keeps the same TaskRun and starts a new pod
+      for each retry.
+  - id: d
+    text: 'Three TaskRuns, because `retries: 2` always runs three attempts.'
+    explanation: Not correct. The third attempt is only started when the second one
+      fails.
+  correct_option: c
+  explanation: Correct. The controller keeps the same TaskRun and starts a new pod
+    for each retry.
+- id: ats126-020-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Use onError for a known failure
+  source_readings:
+  - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
+  prompt: A documentation check fails because of a known broken link. The run must
+    not stop. Which setting fits?
+  options:
+  - id: a
+    text: "`onError: continue` on the pipeline task. Its TaskRun ends with the reason
+      `FailureIgnored`."
+    explanation: Correct. The failure is still recorded, but the run goes on. `retries`
+      cannot be set together with it.
+  - id: b
+    text: "`retries: 5` on the pipeline task."
+    explanation: Not correct. A failure that always happens only wastes time on retries.
+  - id: c
+    text: "`timeout: 0s` on the pipeline task."
+    explanation: Not correct. A timeout does not turn a failure into a pass.
+  - id: d
+    text: "`onError: stopAndFail` on the pipeline task."
+    explanation: Not correct. `stopAndFail` is the default and stops the run.
+  correct_option: a
+  explanation: Correct. The failure is still recorded, but the run goes on. `retries`
+    cannot be set together with it.
+- id: ats126-020-q10
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Set timeouts that fit together
+  source_readings:
+  - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
+  prompt: 'A PipelineRun sets `timeouts.tasks: 2m` and `timeouts.finally: 1m`. Which
+    value of `timeouts.pipeline` is valid and leaves time for `finally`?'
+  options:
+  - id: a
+    text: "`2m`, because `pipeline` must equal `tasks`."
+    explanation: Not correct. With `2m` no time is left for `finally`.
+  - id: b
+    text: "`3m`, because `pipeline` must be at least `tasks` plus `finally`."
+    explanation: Correct. `timeouts.pipeline` covers the tasks and the `finally` tasks
+      together.
+  - id: c
+    text: "`1m`, because `pipeline` is the shortest limit."
+    explanation: Not correct. `1m` is shorter than `tasks`. The three values do not
+      fit.
+  - id: d
+    text: "`90s`, because `finally` runs inside `tasks`."
+    explanation: Not correct. `finally` does not run inside `tasks`. Its time is added.
+  correct_option: b
+  explanation: Correct. `timeouts.pipeline` covers the tasks and the `finally` tasks
+    together.

@@ -1,0 +1,280 @@
+# Knowledge check for section 030. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats126-030
+course_id: ATS126
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: section
+  id: section-030
+  title: Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline
+placement:
+  position: after
+  reading: sections/section-030/capstone/labs/lab-01/question.md
+questions:
+- id: ats126-030-q01
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Count the TaskRuns of a matrix with include
+  source_readings:
+  - sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
+  prompt: A pipeline task has `matrix.params` with two crew names and two images.
+    `matrix.include` adds one entry with a crew name that is not in the list. How
+    many TaskRuns does Tekton create?
+  options:
+  - id: a
+    text: Four. `include` changes one of the four.
+    explanation: Not correct. An `include` entry is added to existing combinations
+      only when it adds a parameter and no value clashes.
+  - id: b
+    text: Two. The lists are matched by position.
+    explanation: Not correct. Tekton builds every combination of the lists.
+  - id: c
+    text: 'Five: four combinations plus one for the `include` entry.'
+    explanation: Correct. The entry has a value no combination has, so it becomes
+      a combination of its own.
+  - id: d
+    text: Three. Only the distinct crew names count.
+    explanation: Not correct. Images and crew names multiply. They are not counted
+      apart.
+  correct_option: c
+  explanation: Correct. The entry has a value no combination has, so it becomes a
+    combination of its own.
+- id: ats126-030-q02
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain how include can add a parameter
+  source_readings:
+  - sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
+  prompt: 'An `include` entry only sets the parameter `deck` together with `image:
+    alpine:3.22.7`. What does Tekton do?'
+  options:
+  - id: a
+    text: It creates one new TaskRun with `deck` only.
+    explanation: Not correct. A new combination appears only when a value clashes
+      with all combinations.
+  - id: b
+    text: It rejects the Pipeline, because `deck` is not in `matrix.params`.
+    explanation: Not correct. The webhook accepts extra parameters of the Task in
+      `include`.
+  - id: c
+    text: It adds `deck` to every combination, whatever the image.
+    explanation: Not correct. Only combinations that have the same `image` value get
+      `deck`.
+  - id: d
+    text: It adds `deck` to every combination that has that image and creates no new
+      combination.
+    explanation: Correct. An entry that only adds a parameter is merged into the matching
+      combinations.
+  correct_option: d
+  explanation: Correct. An entry that only adds a parameter is merged into the matching
+    combinations.
+- id: ats126-030-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Read the names of matrix TaskRuns
+  source_readings:
+  - sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
+  prompt: A pipeline task `greet` in the run `crew-1` uses a matrix. How does the
+    controller name its TaskRuns?
+  options:
+  - id: a
+    text: "`crew-1-greet-0`, `crew-1-greet-1`, and so on, with the index of the combination."
+    explanation: Correct. A matrix adds the index to the usual name.
+  - id: b
+    text: "`crew-1-greet` for every combination, with a suffix from Kubernetes."
+    explanation: Not correct. The index comes from Tekton, not from `generateName`.
+  - id: c
+    text: "`crew-1-greet-busybox`, named after the first parameter value."
+    explanation: Not correct. Parameter values are not part of the name.
+  - id: d
+    text: One TaskRun named `crew-1-greet` that runs all combinations.
+    explanation: Not correct. Each combination is its own TaskRun with its own pod.
+  correct_option: a
+  explanation: Correct. A matrix adds the index to the usual name.
+- id: ats126-030-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Consume the results of a matrix
+  source_readings:
+  - sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
+  prompt: A matrixed task has the string result `greeting`. How does another task
+    use the results of all its TaskRuns?
+  options:
+  - id: a
+    text: With `$(tasks.greet.results.greeting)` into a string parameter.
+    explanation: Not correct. A matrix has no single string result.
+  - id: b
+    text: With `$(tasks.greet.results.greeting[*])` into a parameter of type `array`.
+    explanation: Correct. The string results are collected into one array. You cannot
+      pick one element.
+  - id: c
+    text: With `$(tasks.greet.results.greeting[0])` for each TaskRun.
+    explanation: Not correct. You cannot pick one element of the array.
+  - id: d
+    text: With `$(tasks.greet.matrix.results)` into a string parameter.
+    explanation: Not correct. `$(tasks.<task>.matrix.length)` gives the count, not
+      the results.
+  correct_option: b
+  explanation: Correct. The string results are collected into one array. You cannot
+    pick one element.
+- id: ats126-030-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Find where a resolved Task runs
+  source_readings:
+  - sections/section-030/module-01/course-02-custom-tasks-and-remote-resolution.md
+  prompt: A `taskRef` uses the cluster resolver for the Task `say-hello` in the namespace
+    `ci-catalog`. The PipelineRun is in `starfleet`. In which namespace do the TaskRun
+    and its pod run?
+  options:
+  - id: a
+    text: In `starfleet`. Only the definition comes from `ci-catalog`.
+    explanation: Correct. The TaskRun belongs to the namespace of the PipelineRun.
+  - id: b
+    text: In `ci-catalog`, because the Task lives there.
+    explanation: Not correct. The resolver only fetches the YAML.
+  - id: c
+    text: In `tekton-pipelines-resolvers`, where the resolver runs.
+    explanation: Not correct. The resolver does not run TaskRuns.
+  - id: d
+    text: In both namespaces, one pod in each.
+    explanation: Not correct. One TaskRun creates one pod in one namespace.
+  correct_option: a
+  explanation: Correct. The TaskRun belongs to the namespace of the PipelineRun.
+- id: ats126-030-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Pin a Task fetched by the git resolver
+  source_readings:
+  - sections/section-030/module-01/course-02-custom-tasks-and-remote-resolution.md
+  prompt: 'A team uses the git resolver with `revision: main`. They need the same
+    Task version in every run. What should they do?'
+  options:
+  - id: a
+    text: Keep `main`, because a branch name never changes.
+    explanation: Not correct. A branch moves with every new commit.
+  - id: b
+    text: Set `revision` to a commit hash.
+    explanation: Correct. A branch name points to whatever the branch has when the
+      run starts.
+  - id: c
+    text: Set `pathInRepo` to a directory.
+    explanation: Not correct. `pathInRepo` selects the file, not the version.
+  - id: d
+    text: Switch to a `name` and `resolver` in the same `taskRef`.
+    explanation: Not correct. A `taskRef` uses `name` or `resolver`, not both.
+  correct_option: b
+  explanation: Correct. A branch name points to whatever the branch has when the run
+    starts.
+- id: ats126-030-q07
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Predict a custom task without a controller
+  source_readings:
+  - sections/section-030/module-01/course-02-custom-tasks-and-remote-resolution.md
+  prompt: 'A pipeline task has a `taskRef` with `apiVersion: example.dev/v1alpha1`
+    and `kind: Wait`. No controller for that kind is installed. What happens?'
+  options:
+  - id: a
+    text: Tekton creates a TaskRun and runs a pod with the default image.
+    explanation: Not correct. Custom tasks do not create TaskRuns or pods.
+  - id: b
+    text: The webhook rejects the Pipeline, because `Wait` is unknown.
+    explanation: Not correct. The webhook does not check that a custom task controller
+      exists.
+  - id: c
+    text: Tekton creates a `CustomRun` and no pod. Nothing sets its condition, so
+      only a timeout ends the run.
+    explanation: Correct. Another controller must do the work of a custom task and
+      report on the `CustomRun`.
+  - id: d
+    text: The `CustomRun` succeeds at once with empty results.
+    explanation: Not correct. Without a controller, no condition is set.
+  correct_option: c
+  explanation: Correct. Another controller must do the work of a custom task and report
+    on the `CustomRun`.
+- id: ats126-030-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Design the order of a CI graph
+  source_readings:
+  - sections/section-030/module-01/course-03-design-an-end-to-end-ci-pipeline.md
+  prompt: In the CI Pipeline, `lint`, `test` and `scan` all need the cloned source.
+    `build` pushes an image. Which edges give a fast and safe graph?
+  options:
+  - id: a
+    text: The checks run one after the other. `build` runs after `scan` only.
+    explanation: Not correct. Chaining the checks makes the run slower for no reason.
+  - id: b
+    text: 'All four tasks use `runAfter: [clone]`, so `build` runs with the checks.'
+    explanation: Not correct. `build` could push an image that fails a check.
+  - id: c
+    text: "`build` runs after `clone`. The checks run after `build`."
+    explanation: Not correct. The checks must happen before the image is built and
+      pushed.
+  - id: d
+    text: 'The three checks use `runAfter: [clone]` and run in parallel. `build` uses
+      `runAfter` with all three checks.'
+    explanation: Correct. The checks only need the source. An image that failed a
+      check must not be pushed.
+  correct_option: d
+  explanation: Correct. The checks only need the source. An image that failed a check
+    must not be pushed.
+- id: ats126-030-q09
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Read the notification of a feature branch run
+  source_readings:
+  - sections/section-030/module-01/course-03-design-an-end-to-end-ci-pipeline.md
+  prompt: The CI run on `feature/banner` skips `deploy` with its `when` expression.
+    The checks and the build succeed. What does the `finally` task `notify` receive
+    as `$(tasks.status)` and `$(tasks.deploy.status)`?
+  options:
+  - id: a
+    text: "`Succeeded` and `Succeeded`."
+    explanation: Not correct. That is what a run on `main` shows, when `deploy` ran.
+  - id: b
+    text: "`Completed` and `None`."
+    explanation: Correct. Something was skipped, so the aggregate is `Completed`.
+      A skipped task has the status `None`.
+  - id: c
+    text: "`Failed` and `Failed`."
+    explanation: Not correct. Nothing failed in this run.
+  - id: d
+    text: "`Completed` and `Failed`."
+    explanation: Not correct. A skipped task is `None`, not `Failed`.
+  correct_option: b
+  explanation: Correct. Something was skipped, so the aggregate is `Completed`. A
+    skipped task has the status `None`.
+- id: ats126-030-q10
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Keep the report task independent of results
+  source_readings:
+  - sections/section-030/module-01/course-03-design-an-end-to-end-ci-pipeline.md
+  prompt: The `notify` task must report every run, including runs where a check fails.
+    Which parameters should it take?
+  options:
+  - id: a
+    text: The image digest from `$(tasks.build.results.IMAGE_DIGEST)`.
+    explanation: Not correct. If `build` does not run, the result is missing and `notify`
+      is skipped.
+  - id: b
+    text: The commit from `$(tasks.clone.results.commit)`.
+    explanation: Not correct. If `clone` fails, the result is missing and `notify`
+      is skipped.
+  - id: c
+    text: The run name, the branch and execution status such as `$(tasks.status)`.
+    explanation: Correct. These values exist in every run. A result may be missing
+      after a failure.
+  - id: d
+    text: Nothing. A `finally` task cannot take parameters.
+    explanation: Not correct. A `finally` task takes parameters like any pipeline
+      task.
+  correct_option: c
+  explanation: Correct. These values exist in every run. A result may be missing after
+    a failure.
