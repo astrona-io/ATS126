@@ -1,0 +1,45 @@
+# The Pipeline the lab starts with. It has two faults:
+#  - the parameter crew is declared as a string, but the PipelineRun passes
+#    a list, so the run fails with ParameterTypeMismatch;
+#  - the pipeline task write does not pass the optional workspace outbox to
+#    the Task, so the Task never sees a bound workspace.
+# Fixing them is the task.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: notice
+  namespace: starfleet
+spec:
+  params:
+    - name: title
+      type: string
+      default: Notice
+    - name: crew
+      type: string
+    - name: release
+      type: object
+      properties:
+        name:
+          type: string
+        deck:
+          type: string
+  workspaces:
+    - name: outbox
+      optional: true
+  results:
+    - name: line
+      value: $(tasks.write.results.line)
+    - name: outbox
+      value: $(tasks.write.results.outbox)
+  tasks:
+    - name: write
+      taskRef:
+        name: write-notice
+      params:
+        - name: title
+          value: $(params.title)
+        - name: crew
+          value:
+            - "$(params.crew)"
+        - name: release
+          value: $(params.release[*])

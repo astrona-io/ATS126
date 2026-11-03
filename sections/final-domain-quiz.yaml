@@ -1,253 +1,542 @@
 # Final domain quiz. Listed in astrona.yaml as the last `type: quiz` entry.
 schema_version: 1
 kind: question_bank
-id: ats126-final
+id: "ats126-final"
 course_id: ATS126
 exam_code: TEKTON
 status: draft
-provenance: Original practice material written for this course; not official exam
-  questions.
+provenance: Original practice material written for this course; not official exam questions.
 scope:
   type: domain
-  id: pipelines-task-graphs-custom-tasks
-  title: 'Tekton: Pipelines, Task Graphs & Custom Tasks'
+  id: "pipelines-task-graphs-custom-tasks"
+  title: "Tekton: Pipelines, Task Graphs & Custom Tasks"
 questions:
-- id: ats126-final-q01
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Tell which links order the tasks of a Pipeline
-  source_readings:
-  - sections/section-010/module-01/course-03-order-tasks-into-a-graph.md
-  prompt: The pipeline tasks `writer` and `reader` use the same workspace. `writer`
-    writes a file and `reader` reads it. Neither has `runAfter` and neither uses a
-    result of the other. What does Tekton do?
-  options:
-  - id: a
-    text: It starts both at the same time, so `reader` may look before `writer` has
-      written.
-    explanation: Correct. A shared workspace is not an edge of the graph. Only `runAfter`
-      and result references are.
-  - id: b
-    text: It starts them in the order of `spec.tasks`.
-    explanation: Not correct. The order in `spec.tasks` means nothing. Only the edges
-      count.
-  - id: c
-    text: It starts `writer` first, because the workspace is shared.
-    explanation: Not correct. A shared workspace does not order tasks.
-  - id: d
-    text: It rejects the Pipeline when you apply it.
-    explanation: Not correct. The webhook accepts this Pipeline. The fault shows at
-      run time.
-  correct_option: a
-  explanation: Correct. A shared workspace is not an edge of the graph. Only `runAfter`
-    and result references are.
-- id: ats126-final-q02
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Write a result reference between pipeline tasks
-  source_readings:
-  - sections/section-010/module-01/course-02-results-between-tasks.md
-  prompt: The pipeline task `pick` runs the Task `pick-crew`, which has the result
-    `captain`. Which reference gives that result to another pipeline task?
-  options:
-  - id: a
-    text: "`$(tasks.pick-crew.results.captain)`"
-    explanation: Not correct. `pick-crew` is the Task name. The reference uses the
-      pipeline task name.
-  - id: b
-    text: "`$(tasks.pick.results.captain)`"
-    explanation: Correct. The first name is the pipeline task name, not the Task name.
-  - id: c
-    text: "`$(pick.results.captain)`"
-    explanation: Not correct. The reference must start with `tasks.`.
-  - id: d
-    text: "`$(results.captain)`"
-    explanation: Not correct. `$(results.captain.path)` is used inside the Task to
-      write the result, not to read it.
-  correct_option: b
-  explanation: Correct. The first name is the pipeline task name, not the Task name.
-- id: ats126-final-q03
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Read the failure of a misspelled result reference
-  source_readings:
-  - sections/section-010/module-01/course-02-results-between-tasks.md
-  prompt: A PipelineRun refers to `$(tasks.pick.results.capitan)`, but the Task `pick-crew`
-    only has the result `captain`. What do you see?
-  options:
-  - id: a
-    text: "`kubectl apply` is rejected by the webhook."
-    explanation: Not correct. The webhook only checks that the pipeline task `pick`
-      exists.
-  - id: b
-    text: The `pick` TaskRun fails and its pod log shows the error.
-    explanation: Not correct. The run fails before any TaskRun and pod exist, so there
-      is no log.
-  - id: c
-    text: The run fails with the reason `InvalidTaskResultReference` and no TaskRun
-      exists.
-    explanation: Correct. The controller loads the Task and checks the result name
-      before it creates any TaskRun.
-  - id: d
-    text: The run succeeds and the parameter is an empty string.
-    explanation: Not correct. An unresolvable reference fails the run. It never becomes
-      an empty string.
-  correct_option: c
-  explanation: Correct. The controller loads the Task and checks the result name before
-    it creates any TaskRun.
-- id: ats126-final-q04
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Predict which tasks run after a skipped task
-  source_readings:
-  - sections/section-020/module-01/course-01-guard-tasks-with-when.md
-  prompt: "`deploy` is skipped by its `when` expression. `smoke` has only `runAfter:
-    [deploy]`. `announce` uses `$(tasks.deploy.results.url)`. What happens to them?"
-  options:
-  - id: a
-    text: Both run, and `announce` gets an empty `url`.
-    explanation: Not correct. `announce` needs a result that does not exist, so it
-      is skipped.
-  - id: b
-    text: Both are skipped, because `deploy` was skipped.
-    explanation: Not correct. `runAfter` alone does not skip `smoke`.
-  - id: c
-    text: "`smoke` is skipped and `announce` runs."
-    explanation: Not correct. The two tasks behave the other way round.
-  - id: d
-    text: "`smoke` runs. `announce` is skipped with the reason `Results were missing`."
-    explanation: Correct. A skipped task stops only the tasks that need its results.
-  correct_option: d
-  explanation: Correct. A skipped task stops only the tasks that need its results.
-- id: ats126-final-q05
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Explain how a retry is recorded
-  source_readings:
-  - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
-  prompt: 'A pipeline task has `retries: 2`. Its first attempt fails and the second
-    attempt succeeds. What do you find?'
-  options:
-  - id: a
-    text: One TaskRun, the failed attempt in `status.retriesStatus`, and a second
-      pod ending in `-retry1`.
-    explanation: Correct. The controller keeps the same TaskRun and starts a new pod
-      for each retry.
-  - id: b
-    text: One TaskRun and one pod, because the pod is restarted.
-    explanation: Not correct. Each attempt gets its own pod.
-  - id: c
-    text: Two TaskRuns, one for each attempt.
-    explanation: Not correct. A retry reuses the TaskRun.
-  - id: d
-    text: 'Three TaskRuns, because `retries: 2` always runs three attempts.'
-    explanation: Not correct. The third attempt is only started when the second one
-      fails.
-  correct_option: a
-  explanation: Correct. The controller keeps the same TaskRun and starts a new pod
-    for each retry.
-- id: ats126-final-q06
-  type: single_choice
-  difficulty: advanced
-  learning_objective: Set timeouts that fit together
-  source_readings:
-  - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
-  prompt: 'A PipelineRun sets `timeouts.tasks: 2m` and `timeouts.finally: 1m`. Which
-    value of `timeouts.pipeline` is valid and leaves time for `finally`?'
-  options:
-  - id: a
-    text: "`2m`, because `pipeline` must equal `tasks`."
-    explanation: Not correct. With `2m` no time is left for `finally`.
-  - id: b
-    text: "`3m`, because `pipeline` must be at least `tasks` plus `finally`."
-    explanation: Correct. `timeouts.pipeline` covers the tasks and the `finally` tasks
-      together.
-  - id: c
-    text: "`1m`, because `pipeline` is the shortest limit."
-    explanation: Not correct. `1m` is shorter than `tasks`. The three values do not
-      fit.
-  - id: d
-    text: "`90s`, because `finally` runs inside `tasks`."
-    explanation: Not correct. `finally` does not run inside `tasks`. Its time is added.
-  correct_option: b
-  explanation: Correct. `timeouts.pipeline` covers the tasks and the `finally` tasks
-    together.
-- id: ats126-final-q07
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Count the TaskRuns of a matrix with include
-  source_readings:
-  - sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
-  prompt: A pipeline task has `matrix.params` with two crew names and two images.
-    `matrix.include` adds one entry with a crew name that is not in the list. How
-    many TaskRuns does Tekton create?
-  options:
-  - id: a
-    text: Four. `include` changes one of the four.
-    explanation: Not correct. An `include` entry is added to existing combinations
-      only when it adds a parameter and no value clashes.
-  - id: b
-    text: Two. The lists are matched by position.
-    explanation: Not correct. Tekton builds every combination of the lists.
-  - id: c
-    text: 'Five: four combinations plus one for the `include` entry.'
-    explanation: Correct. The entry has a value no combination has, so it becomes
-      a combination of its own.
-  - id: d
-    text: Three. Only the distinct crew names count.
-    explanation: Not correct. Images and crew names multiply. They are not counted
-      apart.
-  correct_option: c
-  explanation: Correct. The entry has a value no combination has, so it becomes a
-    combination of its own.
-- id: ats126-final-q08
-  type: single_choice
-  difficulty: intermediate
-  learning_objective: Pin a Task fetched by the git resolver
-  source_readings:
-  - sections/section-030/module-01/course-02-custom-tasks-and-remote-resolution.md
-  prompt: 'A team uses the git resolver with `revision: main`. They need the same
-    Task version in every run. What should they do?'
-  options:
-  - id: a
-    text: Keep `main`, because a branch name never changes.
-    explanation: Not correct. A branch moves with every new commit.
-  - id: b
-    text: Switch to a `name` and `resolver` in the same `taskRef`.
-    explanation: Not correct. A `taskRef` uses `name` or `resolver`, not both.
-  - id: c
-    text: Set `pathInRepo` to a directory.
-    explanation: Not correct. `pathInRepo` selects the file, not the version.
-  - id: d
-    text: Set `revision` to a commit hash.
-    explanation: Correct. A branch name points to whatever the branch has when the
-      run starts.
-  correct_option: d
-  explanation: Correct. A branch name points to whatever the branch has when the run
-    starts.
-- id: ats126-final-q09
-  type: single_choice
-  difficulty: advanced
-  learning_objective: Read the notification of a feature branch run
-  source_readings:
-  - sections/section-030/module-01/course-03-design-an-end-to-end-ci-pipeline.md
-  prompt: The CI run on `feature/banner` skips `deploy` with its `when` expression.
-    The checks and the build succeed. What does the `finally` task `notify` receive
-    as `$(tasks.status)` and `$(tasks.deploy.status)`?
-  options:
-  - id: a
-    text: "`Completed` and `None`."
-    explanation: Correct. Something was skipped, so the aggregate is `Completed`.
-      A skipped task has the status `None`.
-  - id: b
-    text: "`Succeeded` and `Succeeded`."
-    explanation: Not correct. That is what a run on `main` shows, when `deploy` ran.
-  - id: c
-    text: "`Failed` and `Failed`."
-    explanation: Not correct. Nothing failed in this run.
-  - id: d
-    text: "`Completed` and `Failed`."
-    explanation: Not correct. A skipped task is `None`, not `Failed`.
-  correct_option: a
-  explanation: Correct. Something was skipped, so the aggregate is `Completed`. A
-    skipped task has the status `None`.
+  - id: ats126-final-q01
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Tell which links order the tasks of a Pipeline"
+    source_readings:
+      - sections/section-010/module-01/course-03-order-tasks-into-a-graph.md
+    prompt: "The pipeline tasks `writer` and `reader` use the same workspace. `writer` writes a file and `reader` reads it. Neither has `runAfter` and neither uses a result of the other. What does Tekton do?"
+    options:
+      - id: a
+        text: "It starts both at the same time, so `reader` may look before `writer` has written."
+        explanation: "Correct. A shared workspace is not an edge of the graph. Only `runAfter` and result references are."
+      - id: b
+        text: "It starts them in the order of `spec.tasks`."
+        explanation: "Not correct. The order in `spec.tasks` means nothing. Only the edges count."
+      - id: c
+        text: "It starts `writer` first, because the workspace is shared."
+        explanation: "Not correct. A shared workspace does not order tasks."
+      - id: d
+        text: "It rejects the Pipeline when you apply it."
+        explanation: "Not correct. The webhook accepts this Pipeline. The fault shows at run time."
+    correct_option: a
+    explanation: "Correct. A shared workspace is not an edge of the graph. Only `runAfter` and result references are."
+
+  - id: ats126-final-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Write a result reference between pipeline tasks"
+    source_readings:
+      - sections/section-010/module-01/course-02-results-between-tasks.md
+    prompt: "The pipeline task `pick` runs the Task `pick-crew`, which has the result `captain`. Which reference gives that result to another pipeline task?"
+    options:
+      - id: a
+        text: "`$(tasks.pick-crew.results.captain)`"
+        explanation: "Not correct. `pick-crew` is the Task name. The reference uses the pipeline task name."
+      - id: b
+        text: "`$(tasks.pick.results.captain)`"
+        explanation: "Correct. The first name is the pipeline task name, not the Task name."
+      - id: c
+        text: "`$(pick.results.captain)`"
+        explanation: "Not correct. The reference must start with `tasks.`."
+      - id: d
+        text: "`$(results.captain)`"
+        explanation: "Not correct. `$(results.captain.path)` is used inside the Task to write the result, not to read it."
+    correct_option: b
+    explanation: "Correct. The first name is the pipeline task name, not the Task name."
+
+  - id: ats126-final-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the failure of a misspelled result reference"
+    source_readings:
+      - sections/section-010/module-01/course-02-results-between-tasks.md
+    prompt: "A PipelineRun refers to `$(tasks.pick.results.capitan)`, but the Task `pick-crew` only has the result `captain`. What do you see?"
+    options:
+      - id: a
+        text: "`kubectl apply` is rejected by the webhook."
+        explanation: "Not correct. The webhook only checks that the pipeline task `pick` exists."
+      - id: b
+        text: "The `pick` TaskRun fails and its pod log shows the error."
+        explanation: "Not correct. The run fails before any TaskRun and pod exist, so there is no log."
+      - id: c
+        text: "The run fails with the reason `InvalidTaskResultReference` and no TaskRun exists."
+        explanation: "Correct. The controller loads the Task and checks the result name before it creates any TaskRun."
+      - id: d
+        text: "The run succeeds and the parameter is an empty string."
+        explanation: "Not correct. An unresolvable reference fails the run. It never becomes an empty string."
+    correct_option: c
+    explanation: "Correct. The controller loads the Task and checks the result name before it creates any TaskRun."
+
+  - id: ats126-final-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict which tasks run after a skipped task"
+    source_readings:
+      - sections/section-020/module-01/course-01-guard-tasks-with-when.md
+    prompt: "`deploy` is skipped by its `when` expression. `smoke` has only `runAfter: [deploy]`. `announce` uses `$(tasks.deploy.results.url)`. What happens to them?"
+    options:
+      - id: a
+        text: "Both run, and `announce` gets an empty `url`."
+        explanation: "Not correct. `announce` needs a result that does not exist, so it is skipped."
+      - id: b
+        text: "Both are skipped, because `deploy` was skipped."
+        explanation: "Not correct. `runAfter` alone does not skip `smoke`."
+      - id: c
+        text: "`smoke` is skipped and `announce` runs."
+        explanation: "Not correct. The two tasks behave the other way round."
+      - id: d
+        text: "`smoke` runs. `announce` is skipped with the reason `Results were missing`."
+        explanation: "Correct. A skipped task stops only the tasks that need its results."
+    correct_option: d
+    explanation: "Correct. A skipped task stops only the tasks that need its results."
+
+  - id: ats126-final-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain how a retry is recorded"
+    source_readings:
+      - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
+    prompt: "A pipeline task has `retries: 2`. Its first attempt fails and the second attempt succeeds. What do you find?"
+    options:
+      - id: a
+        text: "One TaskRun, the failed attempt in `status.retriesStatus`, and a second pod ending in `-retry1`."
+        explanation: "Correct. The controller keeps the same TaskRun and starts a new pod for each retry."
+      - id: b
+        text: "One TaskRun and one pod, because the pod is restarted."
+        explanation: "Not correct. Each attempt gets its own pod."
+      - id: c
+        text: "Two TaskRuns, one for each attempt."
+        explanation: "Not correct. A retry reuses the TaskRun."
+      - id: d
+        text: "Three TaskRuns, because `retries: 2` always runs three attempts."
+        explanation: "Not correct. The third attempt is only started when the second one fails."
+    correct_option: a
+    explanation: "Correct. The controller keeps the same TaskRun and starts a new pod for each retry."
+
+  - id: ats126-final-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Set timeouts that fit together"
+    source_readings:
+      - sections/section-020/module-01/course-03-timeouts-retries-and-onerror.md
+    prompt: "A PipelineRun sets `timeouts.tasks: 2m` and `timeouts.finally: 1m`. Which value of `timeouts.pipeline` is valid and leaves time for `finally`?"
+    options:
+      - id: a
+        text: "`2m`, because `pipeline` must equal `tasks`."
+        explanation: "Not correct. With `2m` no time is left for `finally`."
+      - id: b
+        text: "`3m`, because `pipeline` must be at least `tasks` plus `finally`."
+        explanation: "Correct. `timeouts.pipeline` covers the tasks and the `finally` tasks together."
+      - id: c
+        text: "`1m`, because `pipeline` is the shortest limit."
+        explanation: "Not correct. `1m` is shorter than `tasks`. The three values do not fit."
+      - id: d
+        text: "`90s`, because `finally` runs inside `tasks`."
+        explanation: "Not correct. `finally` does not run inside `tasks`. Its time is added."
+    correct_option: b
+    explanation: "Correct. `timeouts.pipeline` covers the tasks and the `finally` tasks together."
+
+  - id: ats126-final-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Count the TaskRuns of a matrix with include"
+    source_readings:
+      - sections/section-030/module-01/course-01-fan-out-with-a-matrix.md
+    prompt: "A pipeline task has `matrix.params` with two crew names and two images. `matrix.include` adds one entry with a crew name that is not in the list. How many TaskRuns does Tekton create?"
+    options:
+      - id: a
+        text: "Four. `include` changes one of the four."
+        explanation: "Not correct. An `include` entry is added to existing combinations only when it adds a parameter and no value clashes."
+      - id: b
+        text: "Two. The lists are matched by position."
+        explanation: "Not correct. Tekton builds every combination of the lists."
+      - id: c
+        text: "Five: four combinations plus one for the `include` entry."
+        explanation: "Correct. The entry has a value no combination has, so it becomes a combination of its own."
+      - id: d
+        text: "Three. Only the distinct crew names count."
+        explanation: "Not correct. Images and crew names multiply. They are not counted apart."
+    correct_option: c
+    explanation: "Correct. The entry has a value no combination has, so it becomes a combination of its own."
+
+  - id: ats126-final-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pin a Task fetched by the git resolver"
+    source_readings:
+      - sections/section-030/module-01/course-02-custom-tasks-and-remote-resolution.md
+    prompt: "A team uses the git resolver with `revision: main`. They need the same Task version in every run. What should they do?"
+    options:
+      - id: a
+        text: "Keep `main`, because a branch name never changes."
+        explanation: "Not correct. A branch moves with every new commit."
+      - id: b
+        text: "Switch to a `name` and `resolver` in the same `taskRef`."
+        explanation: "Not correct. A `taskRef` uses `name` or `resolver`, not both."
+      - id: c
+        text: "Set `pathInRepo` to a directory."
+        explanation: "Not correct. `pathInRepo` selects the file, not the version."
+      - id: d
+        text: "Set `revision` to a commit hash."
+        explanation: "Correct. A branch name points to whatever the branch has when the run starts."
+    correct_option: d
+    explanation: "Correct. A branch name points to whatever the branch has when the run starts."
+
+  - id: ats126-final-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read the notification of a feature branch run"
+    source_readings:
+      - sections/section-030/module-01/course-03-design-an-end-to-end-ci-pipeline.md
+    prompt: "The CI run on `feature/banner` skips `deploy` with its `when` expression. The checks and the build succeed. What does the `finally` task `notify` receive as `$(tasks.status)` and `$(tasks.deploy.status)`?"
+    options:
+      - id: a
+        text: "`Completed` and `None`."
+        explanation: "Correct. Something was skipped, so the aggregate is `Completed`. A skipped task has the status `None`."
+      - id: b
+        text: "`Succeeded` and `Succeeded`."
+        explanation: "Not correct. That is what a run on `main` shows, when `deploy` ran."
+      - id: c
+        text: "`Failed` and `Failed`."
+        explanation: "Not correct. Nothing failed in this run."
+      - id: d
+        text: "`Completed` and `Failed`."
+        explanation: "Not correct. A skipped task is `None`, not `Failed`."
+    correct_option: a
+    explanation: "Correct. Something was skipped, so the aggregate is `Completed`. A skipped task has the status `None`."
+
+  - id: ats126-final-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Match the parameter type to the value"
+    source_readings:
+      - sections/section-010/module-02/course-01-parameter-types-and-defaults.md
+    prompt: "A Task declares an array parameter and a PipelineRun passes a plain string. What happens?"
+    options:
+      - id: a
+        text: "The string is turned into a one-item array"
+        explanation: "Not correct. Tekton does not convert types."
+      - id: b
+        text: "The run fails with the reason `ParameterTypeMismatch` before any TaskRun exists"
+        explanation: "Correct. Types are checked before TaskRuns are created."
+      - id: c
+        text: "The Task runs with an empty list"
+        explanation: "Not correct. The run does not start."
+      - id: d
+        text: "The run waits until a list is given"
+        explanation: "Not correct. A wrong type is an error, not a wait."
+    correct_option: b
+    explanation: "Parameter types are strict."
+
+  - id: ats126-final-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use context variables in the right place"
+    source_readings:
+      - sections/section-010/module-02/course-02-variables-and-context.md
+    prompt: "A step needs the name of the PipelineRun. How does the Task get it?"
+    options:
+      - id: a
+        text: "The step reads `$(context.pipelineRun.name)` directly"
+        explanation: "Not correct. The variable is not replaced inside a Task."
+      - id: b
+        text: "The step reads `$(tasks.status)`"
+        explanation: "Not correct. That variable exists only in finally tasks."
+      - id: c
+        text: "The Pipeline passes `$(context.pipelineRun.name)` to a Task parameter"
+        explanation: "Correct. A Task cannot read Pipeline variables."
+      - id: d
+        text: "The step reads `$(workspaces.name.path)`"
+        explanation: "Not correct. That is a workspace path."
+    correct_option: c
+    explanation: "A Pipeline reads run context and hands it over as a parameter."
+
+  - id: ats126-final-q12
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose a writable workspace source"
+    source_readings:
+      - sections/section-010/module-02/course-03-workspace-volume-sources.md
+    prompt: "A Task must write files into its workspace. Which source cannot be used?"
+    options:
+      - id: a
+        text: "`volumeClaimTemplate`"
+        explanation: "Not correct. It is writable."
+      - id: b
+        text: "`emptyDir`"
+        explanation: "Not correct. It is writable."
+      - id: c
+        text: "`persistentVolumeClaim`"
+        explanation: "Not correct. It is writable."
+      - id: d
+        text: "A `configMap` source"
+        explanation: "Correct. ConfigMap and Secret workspaces are read-only."
+    correct_option: d
+    explanation: "Only ConfigMap and Secret sources are read-only."
+
+  - id: ats126-final-q13
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Test an optional workspace"
+    source_readings:
+      - sections/section-010/module-02/course-04-optional-workspaces-sub-paths-and-scheduling.md
+    prompt: "A step must work with or without an optional workspace `cache`. What does it test?"
+    options:
+      - id: a
+        text: "`$(workspaces.cache.bound)`, which is `true` or `false`"
+        explanation: "Correct. The path is empty when nothing is bound."
+      - id: b
+        text: "`$(workspaces.cache.path)` for an error"
+        explanation: "Not correct. The path is an empty text, not an error."
+      - id: c
+        text: "`$(context.task.name)`"
+        explanation: "Not correct. That is the Task name."
+      - id: d
+        text: "`$(params.cache)`"
+        explanation: "Not correct. A workspace is not a parameter."
+    correct_option: a
+    explanation: "Use `bound` before the path."
+
+  - id: ats126-final-q14
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Stop a run and still run cleanup"
+    source_readings:
+      - sections/section-020/module-01/course-04-cancel-stop-and-pause-a-run.md
+    prompt: "Which `spec.status` value of a PipelineRun cancels running tasks and still runs the finally tasks?"
+    options:
+      - id: a
+        text: "`Cancelled`"
+        explanation: "Not correct. It cancels everything, finally tasks included."
+      - id: b
+        text: "`CancelledRunFinally`"
+        explanation: "Correct. Plain `Cancelled` skips the finally tasks."
+      - id: c
+        text: "`StoppedRunFinally`"
+        explanation: "Not correct. It lets running tasks finish; it does not cancel them."
+      - id: d
+        text: "`PipelineRunPending`"
+        explanation: "Not correct. It only holds a run that has not started."
+    correct_option: b
+    explanation: "Choose between cancel and stop, with or without finally."
+
+  - id: ats126-final-q15
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Start a pending run"
+    source_readings:
+      - sections/section-020/module-01/course-04-cancel-stop-and-pause-a-run.md
+    prompt: "A PipelineRun was created with `spec.status: PipelineRunPending`. How does it start?"
+    options:
+      - id: a
+        text: "Wait for the default timeout"
+        explanation: "Not correct. A pending run does not start by time."
+      - id: b
+        text: "Delete its pods"
+        explanation: "Not correct. It has no pods yet."
+      - id: c
+        text: "Remove the `spec.status` field"
+        explanation: "Correct. The controller then begins the run."
+      - id: d
+        text: "Set `spec.status: Started`"
+        explanation: "Not correct. That value does not exist."
+    correct_option: c
+    explanation: "Clearing the status starts a pending run."
+
+  - id: ats126-final-q16
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place a service account"
+    source_readings:
+      - sections/section-020/module-02/course-02-settings-for-a-whole-run.md
+    prompt: "Which field of a PipelineRun sets the service account for all of its pods?"
+    options:
+      - id: a
+        text: "`spec.serviceAccount` of the Pipeline"
+        explanation: "Not correct. A Pipeline has no such field."
+      - id: b
+        text: "`metadata.serviceAccountName`"
+        explanation: "Not correct. No such metadata field exists."
+      - id: c
+        text: "`spec.params.serviceAccountName`"
+        explanation: "Not correct. Parameters do not set the account."
+      - id: d
+        text: "`spec.taskRunTemplate.serviceAccountName`"
+        explanation: "Correct. The template applies to every TaskRun of the run."
+    correct_option: d
+    explanation: "Run-wide pod settings live in `taskRunTemplate`."
+
+  - id: ats126-final-q17
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Predict the pod request of a Task"
+    source_readings:
+      - sections/section-020/module-02/course-03-per-task-overrides-and-resources.md
+    prompt: "A Task has steps that request 100m, 300m and 200m CPU. What CPU request does the pod keep?"
+    options:
+      - id: a
+        text: "300m"
+        explanation: "Correct. Steps run one after another, so the largest request is kept."
+      - id: b
+        text: "600m"
+        explanation: "Not correct. Steps do not run at the same time."
+      - id: c
+        text: "100m"
+        explanation: "Not correct. The largest step would not fit."
+      - id: d
+        text: "200m"
+        explanation: "Not correct. Position does not matter."
+    correct_option: a
+    explanation: "The largest step request wins."
+
+  - id: ats126-final-q18
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a quota wait"
+    source_readings:
+      - sections/section-020/module-02/course-04-read-why-a-run-failed-or-waits.md
+    prompt: "A TaskRun shows `ExceededResourceQuota`. What is happening?"
+    options:
+      - id: a
+        text: "The step exited with a non-zero code"
+        explanation: "Not correct. No pod exists yet."
+      - id: b
+        text: "Pod creation is blocked and retried until quota is free"
+        explanation: "Correct. It is a wait until the timeout."
+      - id: c
+        text: "The image cannot be pulled"
+        explanation: "Not correct. That is `TaskRunImagePullFailed`."
+      - id: d
+        text: "The Task is missing"
+        explanation: "Not correct. That is `CouldntGetTask`."
+    correct_option: b
+    explanation: "Quota blocks pod creation without failing the TaskRun at once."
+
+  - id: ats126-final-q19
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Give a pipeline git access"
+    source_readings:
+      - sections/section-030/module-01/course-04-credentials-for-registries-and-git.md
+    prompt: "How does a TaskRun use a Git credential Secret with the annotation `tekton.dev/git-0`?"
+    options:
+      - id: a
+        text: "The Secret is named after the Task"
+        explanation: "Not correct. Names do not link a Secret to a Task."
+      - id: b
+        text: "The Secret is set as a Pipeline result"
+        explanation: "Not correct. Results do not carry credentials."
+      - id: c
+        text: "The Secret is listed on the ServiceAccount the run uses"
+        explanation: "Correct. Tekton adds the credential to the pod."
+      - id: d
+        text: "The Secret is placed in `tekton-pipelines`"
+        explanation: "Not correct. It must be in the namespace of the run."
+    correct_option: c
+    explanation: "Annotated Secrets work through the ServiceAccount."
+
+  - id: ats126-final-q20
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the request object of a resolver"
+    source_readings:
+      - sections/section-030/module-02/course-01-how-resolution-works.md
+    prompt: "Which object asks a resolver for a Task definition?"
+    options:
+      - id: a
+        text: "A `CustomRun`"
+        explanation: "Not correct. That belongs to custom tasks."
+      - id: b
+        text: "A `TaskRun`"
+        explanation: "Not correct. A TaskRun needs the definition first."
+      - id: c
+        text: "A `ClusterTask`"
+        explanation: "Not correct. It is not the request object."
+      - id: d
+        text: "A `ResolutionRequest`"
+        explanation: "Correct. The resolver writes the answer into its status."
+    correct_option: d
+    explanation: "Resolution works through ResolutionRequest objects."
+
+  - id: ats126-final-q21
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Write a cluster resolver reference"
+    source_readings:
+      - sections/section-030/module-02/course-02-the-cluster-resolver.md
+    prompt: "Which `kind` value does a cluster resolver reference use for a Task?"
+    options:
+      - id: a
+        text: "`task`"
+        explanation: "Correct. The values are lowercase."
+      - id: b
+        text: "`Task`"
+        explanation: "Not correct. The value is lowercase."
+      - id: c
+        text: "`tekton.dev/v1/Task`"
+        explanation: "Not correct. Only the kind is given."
+      - id: d
+        text: "`taskrun`"
+        explanation: "Not correct. That is a run, not a definition."
+    correct_option: a
+    explanation: "Use lowercase `task`, `pipeline` or `stepaction`."
+
+  - id: ats126-final-q22
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pin a git resolver reference"
+    source_readings:
+      - sections/section-030/module-02/course-03-the-git-and-http-resolvers.md
+    prompt: "Which `revision` keeps a git resolver reference the same on every run?"
+    options:
+      - id: a
+        text: "`main`"
+        explanation: "Not correct. The branch moves."
+      - id: b
+        text: "A commit hash"
+        explanation: "Correct. A branch name moves."
+      - id: c
+        text: "`HEAD`"
+        explanation: "Not correct. It moves too."
+      - id: d
+        text: "No revision"
+        explanation: "Not correct. The default branch is used."
+    correct_option: b
+    explanation: "Pin commits for releases."
+
+  - id: ats126-final-q23
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a resolution failure"
+    source_readings:
+      - sections/section-030/module-02/course-04-read-and-fix-resolution-failures.md
+    prompt: "A PipelineRun refers to a Task path that does not exist in Git. What is the result?"
+    options:
+      - id: a
+        text: "The run succeeds with a warning"
+        explanation: "Not correct. A missing definition cannot succeed."
+      - id: b
+        text: "The TaskRun times out"
+        explanation: "Not correct. No TaskRun exists."
+      - id: c
+        text: "The run fails with `CouldntGetTask` and no TaskRuns exist"
+        explanation: "Correct. The definition was never fetched."
+      - id: d
+        text: "The run waits forever"
+        explanation: "Not correct. The failure is reported."
+    correct_option: c
+    explanation: "A failed resolution fails the run before pods exist."
+

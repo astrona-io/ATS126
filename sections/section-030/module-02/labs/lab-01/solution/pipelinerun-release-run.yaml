@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: release-run
+  namespace: starfleet
+spec:
+  params:
+    - name: target
+      value: prod
+  pipelineRef:
+    resolver: cluster
+    params:
+      - name: kind
+        value: pipeline
+      - name: name
+        value: release-flow
+      - name: namespace
+        value: ci-catalog

@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: notice-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: notice
+  params:
+    - name: crew
+      value:
+        - bridge
+        - scout
+        - probe
+    - name: release
+      value:
+        name: r9
+        deck: "3"

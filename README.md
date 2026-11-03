@@ -31,9 +31,9 @@ contains:
 
 | Section | Title | Modules | Labs | Topic |
 | --- | --- | --- | --- | --- |
-| [010](sections/section-010) | Pipelines And The Task Graph | 1 | 1 + capstone | Pipelines |
-| [020](sections/section-020) | Control Flow With When, Finally, Timeouts And Retries | 1 | 1 + capstone | Control flow |
-| [030](sections/section-030) | Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline | 1 | 1 + capstone | Matrix and CI pipeline |
+| [010](sections/section-010) | Pipelines And The Task Graph | 2 | 2 + capstone | Pipelines |
+| [020](sections/section-020) | Control Flow With When, Finally, Timeouts And Retries | 2 | 2 + capstone | Control flow |
+| [030](sections/section-030) | Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline | 2 | 2 + capstone | Matrix and CI pipeline |
 
 The order goes from structure to control to a real pipeline. Section 010
 builds a `Pipeline` from Tasks, passes workspaces and results, and reads the
@@ -49,15 +49,21 @@ server and registry.
 
 | Module | Reader | Parts | Labs |
 | --- | --- | --- | --- |
-| 010-01 | [Build A Task Graph With Pipelines](sections/section-010/module-01/course.md) | 3 | [lab-01](sections/section-010/module-01/labs/lab-01) |
-| 020-01 | [Control How A Pipeline Runs](sections/section-020/module-01/course.md) | 3 | [lab-01](sections/section-020/module-01/labs/lab-01) |
-| 030-01 | [Fan Out And Build A CI Pipeline](sections/section-030/module-01/course.md) | 3 | [lab-01](sections/section-030/module-01/labs/lab-01) |
+| 010-01 | [Build A Task Graph With Pipelines](sections/section-010/module-01/course.md) | 4 | [lab-01](sections/section-010/module-01/labs/lab-01) |
+| 020-01 | [Control How A Pipeline Runs](sections/section-020/module-01/course.md) | 4 | [lab-01](sections/section-020/module-01/labs/lab-01) |
+| 030-01 | [Fan Out And Build A CI Pipeline](sections/section-030/module-01/course.md) | 4 | [lab-01](sections/section-030/module-01/labs/lab-01) |
+| 010-02 | [Parameters, Variables And Workspaces In Depth](sections/section-010/module-02/course.md) | 4 | [lab-01](sections/section-010/module-02/labs/lab-01) |
+| 020-02 | [Defaults, Service Accounts And Resources](sections/section-020/module-02/course.md) | 4 | [lab-01](sections/section-020/module-02/labs/lab-01) |
+| 030-02 | [Resolvers In Depth](sections/section-030/module-02/course.md) | 4 | [lab-01](sections/section-030/module-02/labs/lab-01) |
 
 | Lab | Title | Kind | Faults or work |
 | --- | --- | --- | --- |
 | 010-01 | Fix The Task Graph Of A Pipeline | troubleshooting | a misspelled result reference, a missing `runAfter` between two tasks that share a file |
 | 020-01 | Guard A Deploy And Report With finally | build | add a `when` expression on the branch, add a `finally` task with execution status, run on two branches |
 | 030-01 | Build An End-To-End CI Pipeline | build | complete `bridge-ci`: matrix tests, scan, kaniko build, deploy only on `main`, `finally` notification |
+| 010-02 | Pass Typed Parameters And An Optional Workspace | troubleshooting | a parameter type that does not match, an optional workspace that is not mapped |
+| 020-02 | Run A Pipeline With A Service Account, Limits And Timeouts | build | set a service account, a pod template, a memory limit and a timeout on a PipelineRun |
+| 030-02 | Share A Task And A Pipeline With The Cluster Resolver | troubleshooting | a cluster resolver reference that names the wrong namespace, then a release flow from the shared catalog |
 
 ---
 

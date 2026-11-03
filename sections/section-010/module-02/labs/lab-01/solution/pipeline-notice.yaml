@@ -1,0 +1,43 @@
+# Reference solution: crew is an array, and write receives the optional workspace.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: notice
+  namespace: starfleet
+spec:
+  params:
+    - name: title
+      type: string
+      default: Notice
+    - name: crew
+      type: array
+    - name: release
+      type: object
+      properties:
+        name:
+          type: string
+        deck:
+          type: string
+  workspaces:
+    - name: outbox
+      optional: true
+  results:
+    - name: line
+      value: $(tasks.write.results.line)
+    - name: outbox
+      value: $(tasks.write.results.outbox)
+  tasks:
+    - name: write
+      taskRef:
+        name: write-notice
+      params:
+        - name: title
+          value: $(params.title)
+        - name: crew
+          value:
+            - "$(params.crew[*])"
+        - name: release
+          value: $(params.release[*])
+      workspaces:
+        - name: outbox
+          workspace: outbox

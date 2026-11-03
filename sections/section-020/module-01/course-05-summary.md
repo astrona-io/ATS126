@@ -10,6 +10,8 @@ A `when` expression guards one pipeline task. It compares an `input` (a paramete
 
 `retries` gives a pipeline task extra attempts inside the same TaskRun; earlier attempts move to `status.retriesStatus`, new pods end in `-retry1`, and `$(context.task.retry-count)` tells a step of an embedded `taskSpec` which attempt it is (a Task used through `taskRef` always sees `0`). `onError: continue` lets a task fail with the reason `FailureIgnored` while the run goes on and can still succeed, and it cannot be combined with `retries`. `timeout` on a pipeline task ends a TaskRun with `TaskRunTimeout`, and `timeouts.pipeline`, `timeouts.tasks` and `timeouts.finally` on a `PipelineRun` limit the whole run, its tasks and its `finally` tasks. The key facts to remember are these:
 
+- `spec.status` is the one field of a started run that can change: `Cancelled` stops at once without `finally`, `CancelledRunFinally` cancels then runs `finally`, `StoppedRunFinally` lets running tasks finish then runs `finally`.
+- `PipelineRunPending` holds a new run back until you remove the field.
 - Skipped tasks and their reasons are in `status.skippedTasks`; a run with skipped tasks and no failure ends `Completed`.
 - A `when` skip does not stop `runAfter` dependents; a missing result does.
 - `finally` always runs, but a missing result can still skip a `finally` task.

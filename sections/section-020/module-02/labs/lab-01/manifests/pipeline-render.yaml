@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: render
+  namespace: starfleet
+spec:
+  tasks:
+    - name: fetch
+      taskSpec:
+        steps:
+          - name: fetch
+            image: busybox:1.37.0
+            script: |
+              #!/bin/sh
+              echo "fetching as user $(id -u)"
+    - name: build
+      runAfter:
+        - fetch
+      taskSpec:
+        steps:
+          - name: build
+            image: busybox:1.37.0
+            script: |
+              #!/bin/sh
+              echo "building as user $(id -u)"

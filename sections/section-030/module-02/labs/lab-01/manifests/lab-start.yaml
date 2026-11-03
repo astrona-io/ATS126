@@ -1,0 +1,6 @@
+# Starting namespace for every ATS126 environment. Every Task, Pipeline and
+# run of the course lives in starfleet.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet

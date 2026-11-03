@@ -16,7 +16,7 @@ This section shows that structure at work. You first write a `Pipeline` from two
 
 ## The learning path
 
-The section has one module. It has a landing page, three short parts, a graded lab right after the part it tests, and a summary. The module also has its own playground, a cluster where you can explore freely, and the landing page starts it for you.
+The section has two modules. The first has a landing page, four short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and its landing page starts it for you.
 
 ### 1. Build A Task Graph With Pipelines
 
@@ -25,7 +25,18 @@ The module starts at its landing page, which also launches the playground. The p
 1. Pipelines, PipelineRuns And Workspaces
 2. Pass Results Between Tasks And Out Of The Pipeline
 3. Order Tasks Into A Graph And Read The Run, followed by the lab **Fix The Task Graph Of A Pipeline**
-4. Summary
+4. Find, Follow And Clean Up Runs
+5. Summary
+
+### 2. Parameters, Variables And Workspaces In Depth
+
+The second module goes deeper on array and object parameters, context variables, workspace volume sources, optional workspaces and sub-paths. It has a landing page, four parts, a graded lab, a summary and a knowledge check of ten questions.
+
+1. Parameter Types And Defaults
+2. Variables And Context
+3. Workspace Volume Sources
+4. Optional Workspaces, Sub-Paths And Scheduling, followed by the lab **Pass Typed Parameters And An Optional Workspace**
+5. Summary
 
 ## Section capstone: Repair A Release Notes Pipeline
 

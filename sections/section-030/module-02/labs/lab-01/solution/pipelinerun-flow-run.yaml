@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: flow-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: flow
+  params:
+    - name: message
+      value: ready

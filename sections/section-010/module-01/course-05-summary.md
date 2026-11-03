@@ -13,6 +13,8 @@ The controller builds a directed acyclic graph from two kinds of edges: `runAfte
 - A `PipelineRun` is a graph of TaskRuns, named `<pipelinerun>-<pipeline task>`.
 - An edge comes only from `runAfter` or from a result reference.
 - A failed task stops the run: running tasks finish, tasks not yet started are skipped with `PipelineRun was stopping`.
+- Tekton labels every object it creates: `tekton.dev/pipeline`, `tekton.dev/pipelineRun`, `tekton.dev/pipelineTask` and `tekton.dev/taskRun` select runs, TaskRuns and pods.
+- `tkn pipelinerun cancel` sets `spec.status: Cancelled`; finished runs and their volumes stay until you delete them.
 - Reasons such as `InvalidWorkspaceBindings`, `PipelineValidationFailed` and `InvalidTaskResultReference` come before any TaskRun; read the condition message.
 
 <!-- astrona:playground:destroy -->

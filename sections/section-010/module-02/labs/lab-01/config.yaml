@@ -1,0 +1,56 @@
+# Pass Typed Parameters And An Optional Workspace
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-lab-010-02"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-lab-010-02-setup"
+      description: "Applies the Task write-notice, the Pipeline notice and the PipelineRun notice-run, and waits until the run has failed"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-notice-run"
+      description: "Confirms notice-run uses the Pipeline notice with crew as an array, succeeded and reports line 'Notice: bridge / r9 deck 3 (3 crew)'"
+      type: "file"
+      source: "validation/validate-notice-run.sh"
+    - name: "validate-outbox-mapping"
+      description: "Confirms outbox is optional in the Pipeline and the pipeline task write passes it on"
+      type: "file"
+      source: "validation/validate-outbox-mapping.sh"
+    - name: "validate-grader-run"
+      description: "Runs the Pipeline with two crew members and a bound workspace and confirms the line and outbox 'bound'"
+      type: "file"
+      source: "validation/validate-grader-run.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

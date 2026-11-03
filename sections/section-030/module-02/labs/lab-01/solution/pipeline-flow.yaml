@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: flow
+  namespace: starfleet
+spec:
+  params:
+    - name: message
+      type: string
+  results:
+    - name: line
+      value: $(tasks.call.results.line)
+  tasks:
+    - name: call
+      params:
+        - name: message
+          value: $(params.message)
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: announce
+          - name: namespace
+            value: ci-catalog

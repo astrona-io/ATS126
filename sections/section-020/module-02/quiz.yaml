@@ -1,0 +1,246 @@
+# Knowledge check for module 020-02. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: "ats126-020-02"
+course_id: ATS126
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: "section-020/module-02"
+placement:
+  position: after
+  reading: "sections/section-020/module-02/course-05-summary.md"
+questions:
+  - id: ats126-020-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Find the cluster defaults for timeouts"
+    source_readings:
+      - sections/section-020/module-02/course-01-cluster-defaults-with-config-defaults.md
+    prompt: "Where does Tekton keep the default timeout of 60 minutes for runs that set none?"
+    options:
+      - id: a
+        text: "In the key `default-timeout-minutes` of the ConfigMap `config-defaults`"
+        explanation: "Correct. The webhook and controller apply it when a run sets no timeout."
+      - id: b
+        text: "In the `Pipeline` spec of each Pipeline"
+        explanation: "Not correct. A Pipeline has no default timeout of its own."
+      - id: c
+        text: "In the ConfigMap `feature-flags`"
+        explanation: "Not correct. That ConfigMap switches behavior; it holds no timeout."
+      - id: d
+        text: "In the pod template of the controller"
+        explanation: "Not correct. The controller reads the ConfigMap."
+    correct_option: a
+    explanation: "`config-defaults` holds the cluster-wide defaults, including the timeout."
+
+  - id: ats126-020-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when a changed default applies"
+    source_readings:
+      - sections/section-020/module-02/course-01-cluster-defaults-with-config-defaults.md
+    prompt: "A cluster owner changes `default-service-account` in `config-defaults`. Which runs follow the new value?"
+    options:
+      - id: a
+        text: "Every run, including finished ones"
+        explanation: "Not correct. Finished TaskRuns keep what they have."
+      - id: b
+        text: "Runs created after the change; older TaskRuns keep their copied value"
+        explanation: "Correct. The default is copied into the TaskRun spec when the TaskRun is created."
+      - id: c
+        text: "No run until the controller is restarted"
+        explanation: "Not correct. The controller watches the ConfigMap."
+      - id: d
+        text: "Only runs in the namespace `tekton-pipelines`"
+        explanation: "Not correct. The default is cluster-wide."
+    correct_option: b
+    explanation: "Defaults are copied into the TaskRun at creation time."
+
+  - id: ats126-020-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place the service account on the run, not the Pipeline"
+    source_readings:
+      - sections/section-020/module-02/course-02-settings-for-a-whole-run.md
+    prompt: "Where does a team set the service account that the pods of a run use, without editing the Pipeline?"
+    options:
+      - id: a
+        text: "In `spec.serviceAccountName` of the `Pipeline`"
+        explanation: "Not correct. A Pipeline has no such field."
+      - id: b
+        text: "In the `name` of the first pipeline task"
+        explanation: "Not correct. Names identify tasks; they do not select accounts."
+      - id: c
+        text: "In `spec.taskRunTemplate.serviceAccountName` of the `PipelineRun`"
+        explanation: "Correct. The Pipeline describes what runs; the run describes how."
+      - id: d
+        text: "In the labels of the namespace"
+        explanation: "Not correct. Labels do not select a service account."
+    correct_option: c
+    explanation: "`taskRunTemplate` carries the service account and pod template for every pod of the run."
+
+  - id: ats126-020-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read where a pod setting comes from"
+    source_readings:
+      - sections/section-020/module-02/course-02-settings-for-a-whole-run.md
+    prompt: "A pod does not run as the user the `PipelineRun` asked for. Which check shows whether the fault is in the run or in the pod?"
+    options:
+      - id: a
+        text: "Read only the log of the first step"
+        explanation: "Not correct. A log does not show where the setting went missing."
+      - id: b
+        text: "Restart the controller"
+        explanation: "Not correct. That does not show anything about the settings."
+      - id: c
+        text: "Delete the pod"
+        explanation: "Not correct. A new pod is built from the same TaskRun spec."
+      - id: d
+        text: "Read the spec of the TaskRun and compare it with the run"
+        explanation: "Correct. The controller copies the template into the TaskRun, and the pod is built from the TaskRun."
+    correct_option: d
+    explanation: "Compare run, TaskRun and pod to find the layer that lost the setting."
+
+  - id: ats126-020-02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name a pipeline task correctly in taskRunSpecs"
+    source_readings:
+      - sections/section-020/module-02/course-03-per-task-overrides-and-resources.md
+    prompt: "A Pipeline has a pipeline task `heavy` that uses the Task `compile`. Which value goes into `pipelineTaskName`?"
+    options:
+      - id: a
+        text: "`heavy`"
+        explanation: "Correct. The entry names the pipeline task, as written under `tasks:` in the Pipeline."
+      - id: b
+        text: "`compile`"
+        explanation: "Not correct. That is the name of the Task, not of the pipeline task."
+      - id: c
+        text: "`heavy-compile`"
+        explanation: "Not correct. No such combined name exists."
+      - id: d
+        text: "The name of the PipelineRun"
+        explanation: "Not correct. The entry targets a task of the Pipeline."
+    correct_option: a
+    explanation: "`pipelineTaskName` is the name of the pipeline task."
+
+  - id: ats126-020-02-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Explain how step requests become pod requests"
+    source_readings:
+      - sections/section-020/module-02/course-03-per-task-overrides-and-resources.md
+    prompt: "A Task has three steps that request 200m, 500m and 100m of CPU. What CPU request does the pod keep?"
+    options:
+      - id: a
+        text: "800m, the sum of all steps"
+        explanation: "Not correct. The sum applies to containers that run at the same time."
+      - id: b
+        text: "500m, the largest step request, because the steps run one after another"
+        explanation: "Correct. Tekton keeps the largest request and sets the others to zero."
+      - id: c
+        text: "100m, the smallest step request"
+        explanation: "Not correct. The largest request must fit or the step could not run."
+      - id: d
+        text: "200m, the first step"
+        explanation: "Not correct. The position of the step does not decide."
+    correct_option: b
+    explanation: "Steps run one after another, so only the largest request is kept."
+
+  - id: ats126-020-02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose the override layer for one task"
+    source_readings:
+      - sections/section-020/module-02/course-03-per-task-overrides-and-resources.md
+    prompt: "Only the task `build` needs a memory limit of 128Mi. Where is the cleanest place to set it for one run?"
+    options:
+      - id: a
+        text: "`spec.taskRunTemplate.podTemplate`"
+        explanation: "Not correct. That applies to every pod of the run and has no resource field."
+      - id: b
+        text: "`default-pod-template` in `config-defaults`"
+        explanation: "Not correct. That applies to every run of the cluster."
+      - id: c
+        text: "An entry for `build` in `spec.taskRunSpecs` with `computeResources`"
+        explanation: "Correct. The override reaches the named task only."
+      - id: d
+        text: "The `Pipeline`, in the `build` task"
+        explanation: "Not correct. The Pipeline should not carry settings of one environment."
+    correct_option: c
+    explanation: "`taskRunSpecs` is the per-task layer."
+
+  - id: ats126-020-02-q08
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read the reason for a missing Task"
+    source_readings:
+      - sections/section-020/module-02/course-04-read-why-a-run-failed-or-waits.md
+    prompt: "A `PipelineRun` refers to a Task that does not exist. Which reason does it show?"
+    options:
+      - id: a
+        text: "`TaskRunTimeout`"
+        explanation: "Not correct. No TaskRun was created, so none can time out."
+      - id: b
+        text: "`ExceededResourceQuota`"
+        explanation: "Not correct. That reason is about pods that quota blocks."
+      - id: c
+        text: "`TaskRunImagePullFailed`"
+        explanation: "Not correct. That reason belongs to a pod that cannot pull its image."
+      - id: d
+        text: "`CouldntGetTask`"
+        explanation: "Correct. The controller cannot build the graph, so no TaskRuns exist."
+    correct_option: d
+    explanation: "A missing Task fails the run with `CouldntGetTask` before any pod exists."
+
+  - id: ats126-020-02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Treat quota waits correctly"
+    source_readings:
+      - sections/section-020/module-02/course-04-read-why-a-run-failed-or-waits.md
+    prompt: "A TaskRun shows the reason `ExceededResourceQuota` while the first task of the run is still running. What does it mean?"
+    options:
+      - id: a
+        text: "The pod cannot be created yet; the controller retries and the task starts when capacity is free"
+        explanation: "Correct. It is a wait, not a failure."
+      - id: b
+        text: "The task failed and will not run again"
+        explanation: "Not correct. The run is not failed; the pod creation is retried."
+      - id: c
+        text: "The image of the step does not exist"
+        explanation: "Not correct. That is `TaskRunImagePullFailed`."
+      - id: d
+        text: "The Task has a syntax error"
+        explanation: "Not correct. A syntax error is rejected when the object is applied."
+    correct_option: a
+    explanation: "`ExceededResourceQuota` means waiting for quota, which a timeout can still cut short."
+
+  - id: ats126-020-02-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Find the cause of a failed step"
+    source_readings:
+      - sections/section-020/module-02/course-04-read-why-a-run-failed-or-waits.md
+    prompt: "A TaskRun has the reason `Failed` and a message that names a step and an exit code. Where is the next place to look?"
+    options:
+      - id: a
+        text: "The ConfigMap `config-defaults`"
+        explanation: "Not correct. Defaults do not explain a step exit code."
+      - id: b
+        text: "The log of that step in the TaskRun's pod"
+        explanation: "Correct. The reason does not say what went wrong; the log of the step does."
+      - id: c
+        text: "The `ResolutionRequest` of the run"
+        explanation: "Not correct. Resolution is finished when a step has run."
+      - id: d
+        text: "The feature flags of the resolvers"
+        explanation: "Not correct. They are unrelated to a failing step."
+    correct_option: b
+    explanation: "Read the step log when the TaskRun failed with an exit code."
+

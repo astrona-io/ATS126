@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: render-run
+  namespace: starfleet
+spec:
+  pipelineRef:
+    name: render
+  timeouts:
+    pipeline: 10m
+    tasks: 8m
+    finally: 2m
+  taskRunTemplate:
+    serviceAccountName: builder
+    podTemplate:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+  taskRunSpecs:
+    - pipelineTaskName: build
+      computeResources:
+        requests:
+          cpu: 100m
+          memory: 64Mi
+        limits:
+          memory: 128Mi

@@ -1,0 +1,47 @@
+# Builds one notice line from a title, an array of crew names and an object
+# with the release name and deck. When the optional workspace outbox is bound,
+# it also saves the line in notice.txt. It publishes the results line and
+# outbox ("bound" or "not bound").
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: write-notice
+  namespace: starfleet
+spec:
+  params:
+    - name: title
+      type: string
+      default: Notice
+    - name: crew
+      type: array
+    - name: release
+      type: object
+      properties:
+        name:
+          type: string
+        deck:
+          type: string
+  workspaces:
+    - name: outbox
+      optional: true
+  results:
+    - name: line
+    - name: outbox
+  steps:
+    - name: write
+      image: busybox:1.37.0
+      args:
+        - "$(params.crew[*])"
+      script: |
+        #!/bin/sh
+        set -eu
+        count=$#
+        first="$1"
+        line="$(params.title): ${first} / $(params.release.name) deck $(params.release.deck) (${count} crew)"
+        printf '%s' "$line" | tee "$(results.line.path)"
+        if [ "$(workspaces.outbox.bound)" = "true" ]; then
+          printf '%s\n' "$line" > "$(workspaces.outbox.path)/notice.txt"
+          printf 'bound' > "$(results.outbox.path)"
+        else
+          printf 'not bound' > "$(results.outbox.path)"
+        fi

@@ -1,0 +1,60 @@
+# Share A Task And A Pipeline With The Cluster Resolver
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-lab-030-02"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-lab-030-02-setup"
+      description: "Applies the shared catalog in ci-catalog and the Pipeline flow, which asks for the wrong namespace"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The work a correct learner does; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-flow-pipeline"
+      description: "Confirms flow fetches announce from ci-catalog with the cluster resolver"
+      type: "file"
+      source: "validation/validate-flow-pipeline.sh"
+    - name: "validate-flow-run"
+      description: "Confirms flow-run succeeded and reported 'announce: ready'"
+      type: "file"
+      source: "validation/validate-flow-run.sh"
+    - name: "validate-release-run"
+      description: "Confirms release-run resolved release-flow from ci-catalog and reported 'deploy prod'"
+      type: "file"
+      source: "validation/validate-release-run.sh"
+    - name: "validate-grader-run"
+      description: "Runs flow once more with another message and confirms the fix is real"
+      type: "file"
+      source: "validation/validate-grader-run.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

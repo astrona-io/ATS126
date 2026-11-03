@@ -6,7 +6,7 @@ Tekton gives a `Pipeline` four kinds of control. A `when` expression decides bef
 
 Keep one sentence in mind: **every task in a PipelineRun either ran or was skipped, and the status says why.** A TaskRun that exists has a reason such as `Succeeded`, `Failed`, `TaskRunTimeout` or `FailureIgnored`. A task that never ran is in `status.skippedTasks` with a reason such as `When Expressions evaluated to false` or `PipelineRun was stopping`.
 
-The module has three parts. **Guard Tasks With when Expressions** skips a deploy on branches other than `main` and shows what happens to the tasks after it. **Run finally Tasks And Read Execution Status** adds a report that runs on success and on failure. A graded lab follows the second part. **Timeouts, Retries And onError** limits time and handles failures, and the section capstone grades it.
+The module has four parts. **Guard Tasks With when Expressions** skips a deploy on branches other than `main` and shows what happens to the tasks after it. **Run finally Tasks And Read Execution Status** adds a report that runs on success and on failure. A graded lab follows the second part. **Timeouts, Retries And onError** limits time and handles failures, and the section capstone grades it. **Cancel, Stop And Pause A Run** changes a run that has already started, and holds a new run back.
 
 ## Learning objectives
 
@@ -17,6 +17,7 @@ After this module you can:
 - Add `finally` tasks and pass them `$(tasks.status)`, `$(tasks.<task>.status)` and `$(tasks.<task>.reason)`.
 - Explain why a `finally` task that uses a result of a failed or skipped task is skipped.
 - Set `timeouts` on a `PipelineRun` and `timeout` on a pipeline task, and read the reason `TaskRunTimeout`.
+- Cancel, stop or hold a run with `spec.status` and read the reasons `Cancelled`, `CancelledRunFinally`, `StoppedRunFinally` and `PipelineRunPending`.
 - Retry a task with `retries`, read `status.retriesStatus`, and ignore a failure with `onError: continue`.
 
 ## Before you start

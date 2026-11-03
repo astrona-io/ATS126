@@ -1,0 +1,246 @@
+# Knowledge check for module 010-02. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: "ats126-010-02"
+course_id: ATS126
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: "section-010/module-02"
+placement:
+  position: after
+  reading: "sections/section-010/module-02/course-05-summary.md"
+questions:
+  - id: ats126-010-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose the right parameter type for a list of values"
+    source_readings:
+      - sections/section-010/module-02/course-01-parameter-types-and-defaults.md
+    prompt: "A Task must receive a list of crew names. Which parameter declaration fits?"
+    options:
+      - id: a
+        text: "`type: array`"
+        explanation: "Correct. An array parameter holds a list of strings, and a Pipeline can pass it with `$(params.crew[*])`."
+      - id: b
+        text: "`type: string` with the names joined by commas"
+        explanation: "Not correct. A string is one value. The Task would have to split it itself."
+      - id: c
+        text: "`type: list`"
+        explanation: "Not correct. The types are `string`, `array` and `object`. `list` does not exist."
+      - id: d
+        text: "`type: object` with one key per name"
+        explanation: "Not correct. An object has fixed named keys, not a list of any length."
+    correct_option: a
+    explanation: "Tekton parameters have the types string, array and object, and a list belongs in an array."
+
+  - id: ats126-010-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the reason of a type mismatch"
+    source_readings:
+      - sections/section-010/module-02/course-01-parameter-types-and-defaults.md
+    prompt: "A `PipelineRun` passes a list for a parameter that the Pipeline declares as a string. The run fails before any TaskRun exists. Which reason does its `Succeeded` condition show?"
+    options:
+      - id: a
+        text: "`ParameterMissing`"
+        explanation: "Not correct. That reason means a parameter without a default got no value."
+      - id: b
+        text: "`ParameterTypeMismatch`"
+        explanation: "Correct. The controller compares the value of the run with the declared type before it creates TaskRuns."
+      - id: c
+        text: "`ObjectParameterMissKeys`"
+        explanation: "Not correct. That reason belongs to an object value that lacks declared keys."
+      - id: d
+        text: "`TaskRunTimeout`"
+        explanation: "Not correct. No TaskRun exists, so no timeout applies."
+    correct_option: b
+    explanation: "A value whose type differs from the declaration fails the run with `ParameterTypeMismatch`."
+
+  - id: ats126-010-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use the array star form in the allowed places"
+    source_readings:
+      - sections/section-010/module-02/course-01-parameter-types-and-defaults.md
+    prompt: "Where is `$(params.crew[*])` allowed for an array parameter?"
+    options:
+      - id: a
+        text: "Anywhere, including inside a `script` string"
+        explanation: "Not correct. A script is one string and cannot hold several elements."
+      - id: b
+        text: "Only in `script` blocks"
+        explanation: "Not correct. It is the opposite: a script cannot take it."
+      - id: c
+        text: "Only in `command`, `args` and in another array parameter"
+        explanation: "Correct. The star form expands to several elements, so it needs a place that takes a list."
+      - id: d
+        text: "Only in workspace names"
+        explanation: "Not correct. Workspace names are plain strings and take no parameters."
+    correct_option: c
+    explanation: "The expansion to several elements works only where a list is expected."
+
+  - id: ats126-010-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Reach one key of an object parameter"
+    source_readings:
+      - sections/section-010/module-02/course-01-parameter-types-and-defaults.md
+    prompt: "A `PipelineRun` passes an object parameter `release` with the keys `name` and `deck`. How does a step read the key `deck`?"
+    options:
+      - id: a
+        text: "`$(params.release[deck])`"
+        explanation: "Not correct. Square brackets with a name are not valid for objects."
+      - id: b
+        text: "`$(params.release/deck)`"
+        explanation: "Not correct. Slashes are not part of the variable syntax."
+      - id: c
+        text: "`$(release.deck)`"
+        explanation: "Not correct. Every parameter variable starts with `params.`."
+      - id: d
+        text: "`$(params.release.deck)`"
+        explanation: "Correct. A dot and the key name read one value of the object."
+    correct_option: d
+    explanation: "Object keys are read with `$(params.<name>.<key>)`."
+
+  - id: ats126-010-02-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know which variables belong to a Pipeline"
+    source_readings:
+      - sections/section-010/module-02/course-02-variables-and-context.md
+    prompt: "Which variable can only be read in a Pipeline and not in a Task?"
+    options:
+      - id: a
+        text: "`$(context.pipelineRun.name)`"
+        explanation: "Correct. A Task does not know whether a Pipeline started it, so the Pipeline reads it and passes it as a parameter."
+      - id: b
+        text: "`$(context.taskRun.name)`"
+        explanation: "Not correct. That variable works in a Task."
+      - id: c
+        text: "`$(workspaces.data.path)`"
+        explanation: "Not correct. That variable works in a Task."
+      - id: d
+        text: "`$(results.out.path)`"
+        explanation: "Not correct. That variable works in a Task step."
+    correct_option: a
+    explanation: "Pipeline context variables belong to the Pipeline; pass them to a Task as parameters."
+
+  - id: ats126-010-02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Keep untrusted parameter values out of scripts"
+    source_readings:
+      - sections/section-010/module-02/course-02-variables-and-context.md
+    prompt: "A parameter can carry text from a pull request title. What is the safe way to use it in a step?"
+    options:
+      - id: a
+        text: "Write `$(params.title)` inside the script text"
+        explanation: "Not correct. Substitution is text replacement, so the value becomes part of the script."
+      - id: b
+        text: "Put it in an `env` entry and read the shell variable"
+        explanation: "Correct. The shell never parses the contents of a variable as code."
+      - id: c
+        text: "Wrap `$(params.title)` in double quotes in the script"
+        explanation: "Not correct. A value with a quote closes the quotes and the rest runs as commands."
+      - id: d
+        text: "Declare the parameter as an object"
+        explanation: "Not correct. The type does not escape the text."
+    correct_option: b
+    explanation: "Tekton does not escape values. An environment variable keeps the value as data."
+
+  - id: ats126-010-02-q07
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose a writable workspace source"
+    source_readings:
+      - sections/section-010/module-02/course-03-workspace-volume-sources.md
+    prompt: "Which workspace source cannot be written by a step?"
+    options:
+      - id: a
+        text: "A `volumeClaimTemplate`"
+        explanation: "Not correct. A claim created for the run is writable."
+      - id: b
+        text: "An `emptyDir`"
+        explanation: "Not correct. An empty directory in the pod is writable."
+      - id: c
+        text: "A `configMap`"
+        explanation: "Correct. ConfigMap and Secret workspaces are mounted read-only."
+      - id: d
+        text: "A `persistentVolumeClaim`"
+        explanation: "Not correct. An existing claim is writable unless the Task marks the workspace read-only."
+    correct_option: c
+    explanation: "ConfigMap and Secret volumes are read-only, so output needs another source."
+
+  - id: ats126-010-02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know the lifetime of an emptyDir workspace"
+    source_readings:
+      - sections/section-010/module-02/course-03-workspace-volume-sources.md
+    prompt: "Two tasks of a Pipeline are bound to the same workspace, and the run binds it to `emptyDir: {}`. What happens when the second task reads a file the first one wrote?"
+    options:
+      - id: a
+        text: "The file is there, because the directory is shared by the run"
+        explanation: "Not correct. It is shared by the steps of one pod, not by TaskRuns."
+      - id: b
+        text: "The file is there, but read-only"
+        explanation: "Not correct. The second task does not see it at all."
+      - id: c
+        text: "The run is rejected when it starts"
+        explanation: "Not correct. The binding is valid. The tasks just do not share data."
+      - id: d
+        text: "The file is missing, because each TaskRun has its own pod and its own empty directory"
+        explanation: "Correct. An `emptyDir` lives as long as one pod."
+    correct_option: d
+    explanation: "Use a claim to pass files between tasks. An `emptyDir` belongs to one pod."
+
+  - id: ats126-010-02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Test an optional workspace"
+    source_readings:
+      - sections/section-010/module-02/course-04-optional-workspaces-sub-paths-and-scheduling.md
+    prompt: "A Task declares the workspace `cache` with `optional: true`. How does a step find out whether the run bound it?"
+    options:
+      - id: a
+        text: "It tests `$(workspaces.cache.bound)`, which is `true` or `false`"
+        explanation: "Correct. The variable `path` is empty for an unbound workspace, so a step must test `bound` first."
+      - id: b
+        text: "It tests whether `$(workspaces.cache.path)` exists as a directory"
+        explanation: "Not correct. The path is empty when nothing is bound, so the test is not reliable."
+      - id: c
+        text: "It reads the PipelineRun with `kubectl`"
+        explanation: "Not correct. A step needs no API call; Tekton gives it the variable."
+      - id: d
+        text: "It catches the error of the missing mount"
+        explanation: "Not correct. An optional workspace does not cause an error."
+    correct_option: a
+    explanation: "`$(workspaces.<name>.bound)` is the test for an optional workspace."
+
+  - id: ats126-010-02-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Give two tasks separate folders in one volume"
+    source_readings:
+      - sections/section-010/module-02/course-04-optional-workspaces-sub-paths-and-scheduling.md
+    prompt: "Two parallel tasks both write `note.txt` into one shared workspace and overwrite each other. What fixes it without a second volume?"
+    options:
+      - id: a
+        text: "Add `runAfter` between the two tasks and keep one folder"
+        explanation: "Not correct. That makes them sequential, and the second still overwrites the first."
+      - id: b
+        text: "Give each task's workspace entry a different `subPath`"
+        explanation: "Correct. A `subPath` mounts one folder of the volume, so the two files live in different folders."
+      - id: c
+        text: "Mark the workspace `optional: true`"
+        explanation: "Not correct. Optional only means the binding may be missing."
+      - id: d
+        text: "Change `coschedule` to `disabled`"
+        explanation: "Not correct. That setting controls node placement, not file names."
+    correct_option: b
+    explanation: "A `subPath` on the pipeline task's workspace entry selects the folder each task sees."
+

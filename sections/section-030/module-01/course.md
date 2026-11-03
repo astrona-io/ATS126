@@ -6,7 +6,7 @@ Three new tools make it possible. A `matrix` turns one pipeline task into many T
 
 Keep one sentence in mind: **a CI pipeline is a graph of small Tasks, each doing one job.** The clone, the checks, the build and the deploy are separate Tasks with clear inputs and results. The `Pipeline` decides the order, the parallel branches, the guards and the `finally` work.
 
-The module has three parts. **Fan Out A Task With A Matrix** runs one Task on several images and collects the results. **Custom Tasks And Remote Resolution** fetches Tasks from another namespace and from Git, and shows what a custom task does without its controller. **Design An End-To-End CI Pipeline** puts the CI Tasks of the playground into one Pipeline and runs it on two branches. A graded lab follows the third part.
+The module has four parts. **Fan Out A Task With A Matrix** runs one Task on several images and collects the results. **Custom Tasks And Remote Resolution** fetches Tasks from another namespace and from Git, and shows what a custom task does without its controller. **Design An End-To-End CI Pipeline** puts the CI Tasks of the playground into one Pipeline and runs it on two branches. A graded lab follows the third part. **Credentials For Registries And Git** brings logins into the pipeline safely.
 
 ## Learning objectives
 
@@ -16,6 +16,7 @@ After this module you can:
 - Consume the results of a matrixed task as an array, and use `$(tasks.<task>.matrix.length)`.
 - Explain what a custom task and a `CustomRun` are, and what happens when no controller handles them.
 - Fetch a Task with the `cluster` resolver and the `git` resolver, and name the other built-in resolvers.
+- Give a pipeline credentials through an annotated Secret, a Secret workspace and image pull secrets, and keep them out of logs, parameters and results.
 - Design a CI Pipeline with parallel checks, a guarded deploy and a `finally` notification, and build and push an image with kaniko.
 
 ## Before you start

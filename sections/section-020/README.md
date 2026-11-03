@@ -16,7 +16,7 @@ This section teaches those fields. You first guard tasks with `when` expressions
 
 ## The learning path
 
-The section has one module. It has a landing page, three short parts, a graded lab right after the part it tests, and a summary. The module also has its own playground, a cluster where you can explore freely, and the landing page starts it for you.
+The section has two modules. The first has a landing page, four short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and its landing page starts it for you.
 
 ### 1. Control How A Pipeline Runs
 
@@ -25,7 +25,18 @@ The module starts at its landing page, which also launches the playground. The p
 1. Guard Tasks With when Expressions
 2. Run finally Tasks And Read Execution Status, followed by the lab **Guard A Deploy And Report With finally**
 3. Timeouts, Retries And onError
-4. Summary
+4. Cancel, Stop And Pause A Run
+5. Summary
+
+### 2. Defaults, Service Accounts And Resources
+
+The second module goes deeper on cluster defaults, service accounts, pod templates, resource limits and the reasons a run fails or waits. It has a landing page, four parts, a graded lab, a summary and a knowledge check of ten questions.
+
+1. Cluster Defaults With config-defaults
+2. Settings For A Whole Run
+3. Per-Task Overrides And Resources
+4. Read Why A Run Failed Or Waits, followed by the lab **Run A Pipeline With A Service Account, Limits And Timeouts**
+5. Summary
 
 ## Section capstone: Make A Nightly Pipeline Reliable
 

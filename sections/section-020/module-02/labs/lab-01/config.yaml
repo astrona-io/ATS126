@@ -1,0 +1,56 @@
+# Run A Pipeline With A Service Account, Limits And Timeouts
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-126-lab-020-02"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-126-lab-020-02-setup"
+      description: "Applies the ServiceAccount builder and the Pipeline render, which has no settings"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The work a correct learner does; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-run-spec"
+      description: "Confirms render-run uses the Pipeline render with service account builder and user 1000"
+      type: "file"
+      source: "validation/validate-run-spec.sh"
+    - name: "validate-resources-and-timeouts"
+      description: "Confirms only build has the 128Mi memory limit and the timeouts are 10m, 8m and 2m"
+      type: "file"
+      source: "validation/validate-resources-and-timeouts.sh"
+    - name: "validate-pods"
+      description: "Confirms render-run succeeded and its pods ran as builder and user 1000"
+      type: "file"
+      source: "validation/validate-pods.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

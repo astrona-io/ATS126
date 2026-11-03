@@ -1,0 +1,246 @@
+# Knowledge check for module 030-02. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: "ats126-030-02"
+course_id: ATS126
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: "section-030/module-02"
+placement:
+  position: after
+  reading: "sections/section-030/module-02/course-05-summary.md"
+questions:
+  - id: ats126-030-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe the object behind a resolution"
+    source_readings:
+      - sections/section-030/module-02/course-01-how-resolution-works.md
+    prompt: "Which object does the controller create to ask a resolver for a definition?"
+    options:
+      - id: a
+        text: "A `ResolutionRequest`"
+        explanation: "Correct. The resolver watches these objects and writes the answer into their status."
+      - id: b
+        text: "A `CustomRun`"
+        explanation: "Not correct. A `CustomRun` belongs to custom tasks."
+      - id: c
+        text: "A `ConfigMap` named after the resolver"
+        explanation: "Not correct. ConfigMaps hold the configuration, not the requests."
+      - id: d
+        text: "A `PersistentVolumeClaim`"
+        explanation: "Not correct. A claim holds storage; it plays no part here."
+    correct_option: a
+    explanation: "Resolution runs through `ResolutionRequest` objects."
+
+  - id: ats126-030-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place the namespace of a resolved Pipeline"
+    source_readings:
+      - sections/section-030/module-02/course-01-how-resolution-works.md
+    prompt: "A Pipeline is resolved from the namespace `team-catalog` and contains `taskRef: {name: build}`. Where does the controller look for the Task `build`?"
+    options:
+      - id: a
+        text: "In `team-catalog`, where the Pipeline came from"
+        explanation: "Not correct. Local names resolve in the namespace of the run."
+      - id: b
+        text: "In the namespace of the `PipelineRun`"
+        explanation: "Correct. A resolver changes where a definition comes from, not where it runs."
+      - id: c
+        text: "In `tekton-pipelines`"
+        explanation: "Not correct. Tekton's own namespace is not searched for user Tasks."
+      - id: d
+        text: "In every namespace of the cluster"
+        explanation: "Not correct. Only one namespace is searched."
+    correct_option: b
+    explanation: "Resolved definitions run in the namespace of the run, and local names resolve there."
+
+  - id: ats126-030-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the waiting reason of a run"
+    source_readings:
+      - sections/section-030/module-02/course-01-how-resolution-works.md
+    prompt: "A run stays in the reason `ResolvingTaskRef` for a long time. What does it suggest?"
+    options:
+      - id: a
+        text: "The Task failed with an exit code"
+        explanation: "Not correct. No pod exists yet."
+      - id: b
+        text: "The workspace claim is pending"
+        explanation: "Not correct. Workspaces are handled after the definitions are known."
+      - id: c
+        text: "No resolver has answered the request"
+        explanation: "Correct. A wrong answer would fail the run; a missing answer leaves it waiting."
+      - id: d
+        text: "The run reached its retry limit"
+        explanation: "Not correct. Retries apply to TaskRuns."
+    correct_option: c
+    explanation: "Waiting in `ResolvingTaskRef` means the request is unanswered."
+
+  - id: ats126-030-02-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Write the cluster resolver parameters"
+    source_readings:
+      - sections/section-030/module-02/course-02-the-cluster-resolver.md
+    prompt: "Which parameters does the `cluster` resolver take?"
+    options:
+      - id: a
+        text: "`url`, `revision` and `pathInRepo`"
+        explanation: "Not correct. Those belong to the `git` resolver."
+      - id: b
+        text: "`bundle` and `name`"
+        explanation: "Not correct. Those belong to the `bundles` resolver."
+      - id: c
+        text: "`url` only"
+        explanation: "Not correct. That is the `http` resolver."
+      - id: d
+        text: "`kind`, `name` and `namespace`"
+        explanation: "Correct. Set all three so the reference is clear to a reader."
+    correct_option: d
+    explanation: "The cluster resolver is addressed by kind, name and namespace."
+
+  - id: ats126-030-02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use the right kind value"
+    source_readings:
+      - sections/section-030/module-02/course-02-the-cluster-resolver.md
+    prompt: "A run fetches a Pipeline with the `cluster` resolver. Which value of `kind` is correct?"
+    options:
+      - id: a
+        text: "`pipeline`"
+        explanation: "Correct. The values are lowercase: `task`, `pipeline` or `stepaction`."
+      - id: b
+        text: "`Pipeline`"
+        explanation: "Not correct. The value is written in lowercase."
+      - id: c
+        text: "`tekton.dev/v1 Pipeline`"
+        explanation: "Not correct. The parameter takes only the kind."
+      - id: d
+        text: "`pipelinerun`"
+        explanation: "Not correct. The resolver returns Tasks, Pipelines and StepActions, not runs."
+    correct_option: a
+    explanation: "The `kind` parameter of the cluster resolver is lowercase."
+
+  - id: ats126-030-02-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Limit the namespaces the cluster resolver may read"
+    source_readings:
+      - sections/section-030/module-02/course-02-the-cluster-resolver.md
+    prompt: "A cluster owner wants runs to fetch definitions only from `team-catalog`. Which setting does it?"
+    options:
+      - id: a
+        text: "`default-kind` in `cluster-resolver-config`"
+        explanation: "Not correct. That only sets the kind used when none is given."
+      - id: b
+        text: "`allowed-namespaces` in `cluster-resolver-config`"
+        explanation: "Correct. A reference to any other namespace then fails."
+      - id: c
+        text: "`enable-git-resolver` in `feature-flags`"
+        explanation: "Not correct. That switches another resolver on or off."
+      - id: d
+        text: "`default-timeout-minutes` in `config-defaults`"
+        explanation: "Not correct. That is a timeout."
+    correct_option: b
+    explanation: "`allowed-namespaces` and `blocked-namespaces` restrict the cluster resolver."
+
+  - id: ats126-030-02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pin a definition from Git"
+    source_readings:
+      - sections/section-030/module-02/course-03-the-git-and-http-resolvers.md
+    prompt: "A release Pipeline must use the same Task definition on every run. What does the `git` resolver reference use for `revision`?"
+    options:
+      - id: a
+        text: "`main`"
+        explanation: "Not correct. A branch moves when someone pushes."
+      - id: b
+        text: "`HEAD`"
+        explanation: "Not correct. It also moves."
+      - id: c
+        text: "A commit hash"
+        explanation: "Correct. A commit names one version forever."
+      - id: d
+        text: "An empty value"
+        explanation: "Not correct. The default revision is used, which is usually a branch."
+    correct_option: c
+    explanation: "Pin a commit hash for anything that ships."
+
+  - id: ats126-030-02-q08
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose the http resolver input"
+    source_readings:
+      - sections/section-030/module-02/course-03-the-git-and-http-resolvers.md
+    prompt: "Which parameter does the `http` resolver need?"
+    options:
+      - id: a
+        text: "`pathInRepo` of the file"
+        explanation: "Not correct. That belongs to the `git` resolver."
+      - id: b
+        text: "`namespace` of the file"
+        explanation: "Not correct. That belongs to the `cluster` resolver."
+      - id: c
+        text: "`bundle` of the file"
+        explanation: "Not correct. That belongs to the `bundles` resolver."
+      - id: d
+        text: "`url` of the raw file"
+        explanation: "Correct. The file must be a Task or Pipeline in YAML."
+    correct_option: d
+    explanation: "The `http` resolver takes the URL of one file."
+
+  - id: ats126-030-02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place a resolution failure"
+    source_readings:
+      - sections/section-030/module-02/course-04-read-and-fix-resolution-failures.md
+    prompt: "A `git` resolver reference points at `tasks/say-goodbye.yaml`, which does not exist. What does the run show?"
+    options:
+      - id: a
+        text: "The reason `CouldntGetTask` with a message about the missing file, and no TaskRuns"
+        explanation: "Correct. The definition was never fetched, so no pod exists."
+      - id: b
+        text: "The reason `TaskRunTimeout` after the default timeout"
+        explanation: "Not correct. A failed fetch ends the run with an error reason."
+      - id: c
+        text: "The reason `Succeeded` with a warning"
+        explanation: "Not correct. A missing definition cannot succeed."
+      - id: d
+        text: "The reason `ExceededResourceQuota`"
+        explanation: "Not correct. Quota applies to pods."
+    correct_option: a
+    explanation: "A failed resolution leaves a failure reason and no TaskRuns."
+
+  - id: ats126-030-02-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Recover from a failed resolution"
+    source_readings:
+      - sections/section-030/module-02/course-04-read-and-fix-resolution-failures.md
+    prompt: "You fix a typo in the namespace of a resolver reference in the Pipeline. What must you do for the failed run?"
+    options:
+      - id: a
+        text: "Wait; the controller retries a failed resolution forever"
+        explanation: "Not correct. The run is finished."
+      - id: b
+        text: "Create a new run, because a finished run does not retry"
+        explanation: "Correct. The failed run keeps its result."
+      - id: c
+        text: "Delete the `ResolutionRequest` to retry it"
+        explanation: "Not correct. The run does not ask again."
+      - id: d
+        text: "Restart the resolver Deployment"
+        explanation: "Not correct. The cause was in the reference, not in the resolver."
+    correct_option: b
+    explanation: "Fix the cause, then start a new run."
+
