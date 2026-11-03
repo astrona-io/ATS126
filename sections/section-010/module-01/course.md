@@ -6,7 +6,7 @@ A `Pipeline` is a Kubernetes object that lists pipeline tasks. Each pipeline tas
 
 Keep one sentence in mind: **a `PipelineRun` is a graph of TaskRuns.** Everything you know about TaskRuns (pods, step logs, results, the `Succeeded` condition) still applies. What the `Pipeline` adds is the graph: which task waits for which, which values travel between them, and which volume they share.
 
-The module has four parts. **Pipelines, PipelineRuns And Workspaces** writes a two-task Pipeline and runs it with a shared volume. **Pass Results Between Tasks And Out Of The Pipeline** moves values from one task to the next and out of the Pipeline. **Order Tasks Into A Graph And Read The Run** builds a graph with parallel tasks and shows how to read a `PipelineRun` when the graph is wrong. **Find, Follow And Clean Up Runs** lists, follows, cancels and deletes runs with `tkn` and `kubectl`. A graded lab follows the third part.
+The module has five parts. **Pipelines, PipelineRuns And Workspaces** writes a two-task Pipeline and runs it with a shared volume. **Pass Results Between Tasks And Out Of The Pipeline** moves values from one task to the next and out of the Pipeline. **Order Tasks Into A Graph And Read The Run** builds a graph with parallel tasks and shows how to read a `PipelineRun` when the graph is wrong. **Find, Follow And Clean Up Runs** lists, follows, cancels and deletes runs with `tkn` and `kubectl`. A graded lab follows the third part. **Embedded Specs And Propagated Parameters** writes a run with the specs inside it and shows why its parameters work without declarations.
 
 ## Learning objectives
 

@@ -17,5 +17,6 @@ A `when` expression guards one pipeline task. It compares an `input` (a paramete
 - `finally` always runs, but a missing result can still skip a `finally` task.
 - An ignored failure is still `Failed` in execution status.
 - `timeouts.pipeline` must be at least `timeouts.tasks` plus `timeouts.finally`.
+- CEL guards need the feature flag, a boolean result and quoted parameters. A step can have its own `timeout` and `onError`, and a sidecar lives as long as the steps.
 
 <!-- astrona:playground:destroy -->

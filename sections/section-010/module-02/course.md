@@ -6,7 +6,7 @@ A parameter is a named input of a `Task` or a `Pipeline`. Its type can be a stri
 
 Keep one sentence in mind: **the controller substitutes variables as text before the pod exists.** A variable that the controller cannot resolve fails the run early. A value that ends up inside a script is part of the script. A workspace that is not bound is either an error or, if the Task marks it optional, simply absent.
 
-The module has four parts. **Parameter Types And Defaults** uses string, array and object parameters and reads the reasons for type errors. **Variables And Context** lists which variables exist where, and passes run information into Tasks. **Workspace Volume Sources** binds a ConfigMap, a Secret, an `emptyDir` and a PersistentVolumeClaim. **Optional Workspaces, Sub-Paths And Scheduling** covers workspaces that may be missing, one volume used by several tasks, and how the pods that share a volume land on one node. A graded lab follows the fourth part.
+The module has five parts. **Parameter Types And Defaults** uses string, array and object parameters and reads the reasons for type errors. **Variables And Context** lists which variables exist where, and passes run information into Tasks. **Workspace Volume Sources** binds a ConfigMap, a Secret, an `emptyDir` and a PersistentVolumeClaim. **Optional Workspaces, Sub-Paths And Scheduling** covers workspaces that may be missing, one volume used by several tasks, and how the pods that share a volume land on one node. A graded lab follows the fourth part. **Tracing A Parameter From Run To Step** follows one array and one object through the run, the Pipeline, the TaskRun and the pod.
 
 ## Learning objectives
 

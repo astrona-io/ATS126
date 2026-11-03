@@ -16,5 +16,6 @@ The controller builds a directed acyclic graph from two kinds of edges: `runAfte
 - Tekton labels every object it creates: `tekton.dev/pipeline`, `tekton.dev/pipelineRun`, `tekton.dev/pipelineTask` and `tekton.dev/taskRun` select runs, TaskRuns and pods.
 - `tkn pipelinerun cancel` sets `spec.status: Cancelled`; finished runs and their volumes stay until you delete them.
 - Reasons such as `InvalidWorkspaceBindings`, `PipelineValidationFailed` and `InvalidTaskResultReference` come before any TaskRun; read the condition message.
+- Specs can be embedded in a run, and then parameters of the run work inside them without being declared again.
 
 <!-- astrona:playground:destroy -->

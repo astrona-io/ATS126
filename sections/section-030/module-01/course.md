@@ -6,7 +6,7 @@ Three new tools make it possible. A `matrix` turns one pipeline task into many T
 
 Keep one sentence in mind: **a CI pipeline is a graph of small Tasks, each doing one job.** The clone, the checks, the build and the deploy are separate Tasks with clear inputs and results. The `Pipeline` decides the order, the parallel branches, the guards and the `finally` work.
 
-The module has four parts. **Fan Out A Task With A Matrix** runs one Task on several images and collects the results. **Custom Tasks And Remote Resolution** fetches Tasks from another namespace and from Git, and shows what a custom task does without its controller. **Design An End-To-End CI Pipeline** puts the CI Tasks of the playground into one Pipeline and runs it on two branches. A graded lab follows the third part. **Credentials For Registries And Git** brings logins into the pipeline safely.
+The module has six parts. **Fan Out A Task With A Matrix** runs one Task on several images and collects the results. **Custom Tasks And Remote Resolution** fetches Tasks from another namespace and from Git, and shows what a custom task does without its controller. **Design An End-To-End CI Pipeline** puts the CI Tasks of the playground into one Pipeline and runs it on two branches. A graded lab follows the third part. **Credentials For Registries And Git** brings logins into the pipeline safely. **Matrix Fan-In And Matrix Parameters** feeds a matrix from the run and reads its counts and results. **What A Custom Task Controller Must Do** lists the contract of a controller.
 
 ## Learning objectives
 

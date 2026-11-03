@@ -6,7 +6,7 @@ A resolver is a program in the Deployment `tekton-pipelines-remote-resolvers` th
 
 Keep one sentence in mind: **a resolver changes where a definition comes from, never where it runs.** The TaskRuns of a resolved Pipeline run in the namespace of the `PipelineRun`, with its service account and its secrets. Names inside the definition are looked up there too.
 
-The module has four parts. **How Resolution Works** follows one request from the run to the answer. **The Cluster Resolver** shares Tasks and Pipelines between namespaces and limits the namespaces. **The Git And HTTP Resolvers** fetch from a repository and from a URL, and pin versions. **Read And Fix Resolution Failures** reads the reasons and the ResolutionRequest objects. A graded lab follows the fourth part.
+The module has six parts. **How Resolution Works** follows one request from the run to the answer. **The Cluster Resolver** shares Tasks and Pipelines between namespaces and limits the namespaces. **The Git And HTTP Resolvers** fetch from a repository and from a URL, and pin versions. **Read And Fix Resolution Failures** reads the reasons and the ResolutionRequest objects. A graded lab follows the fourth part. **The Bundles Resolver** fetches definitions from an OCI image. **The Hub Resolver** fetches from a catalog and compares all five resolvers.
 
 ## Learning objectives
 

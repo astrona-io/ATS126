@@ -13,5 +13,6 @@ The `cluster` resolver takes `kind` (lowercase), `name` and `namespace`, and `cl
 - A branch moves; pin a commit for anything that ships.
 - A failed resolution leaves no TaskRuns; read the run, then the ResolutionRequest, then the resolver logs.
 - A finished run does not retry; create a new one after fixing the cause.
+- The `bundles` resolver fetches from an OCI image, best pinned by digest. The `hub` resolver fetches from a catalog, and its version must be pinned and written as a string.
 
 <!-- astrona:playground:destroy -->

@@ -15,5 +15,6 @@ A good CI graph clones once, runs its checks in parallel, builds only after ever
 - A `CustomRun` needs its own controller.
 - Credentials reach a pod as an annotated Secret on the service account (`tekton.dev/git-0`, `tekton.dev/docker-0`), as a Secret workspace, or as `imagePullSecrets`; never as parameters or results.
 - Tag images with a commit hash, run TaskRuns that write to the cluster as a ServiceAccount with only the permissions they need, and keep `finally` reports free of results.
+- A matrix can take its values from a Pipeline array parameter. A custom task controller must set the `Succeeded` condition, honor `timeout` and cancellation, and write the results.
 
 <!-- astrona:playground:destroy -->

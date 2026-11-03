@@ -16,7 +16,7 @@ You first fan one pipeline task out into many TaskRuns with a `matrix`, and coll
 
 ## The learning path
 
-The section has two modules. The first has a landing page, four short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and its landing page starts it for you.
+The section has two modules. The first has a landing page, several short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and its landing page starts it for you.
 
 ### 1. Fan Out And Build A CI Pipeline
 
@@ -26,17 +26,21 @@ The module starts at its landing page, which also launches the playground. The p
 2. Custom Tasks And Remote Resolution
 3. Design An End-To-End CI Pipeline, followed by the lab **Build An End-To-End CI Pipeline**
 4. Credentials For Registries And Git
-5. Summary
+5. Matrix Fan-In And Matrix Parameters
+6. What A Custom Task Controller Must Do
+7. Summary
 
 ### 2. Resolvers In Depth
 
-The second module goes deeper on how resolution works, the cluster, git and http resolvers, and how to read resolution failures. It has a landing page, four parts, a graded lab, a summary and a knowledge check of ten questions.
+The second module goes deeper on how resolution works, the cluster, git and http resolvers, and how to read resolution failures. It has a landing page, six parts, a graded lab, a summary and a knowledge check of ten questions.
 
 1. How Resolution Works
 2. The Cluster Resolver
 3. The Git And HTTP Resolvers
 4. Read And Fix Resolution Failures, followed by the lab **Share A Task And A Pipeline With The Cluster Resolver**
-5. Summary
+5. The Bundles Resolver
+6. The Hub Resolver
+7. Summary
 
 ## Section capstone: Repair A Broken CI Pipeline
 

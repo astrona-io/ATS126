@@ -49,12 +49,12 @@ server and registry.
 
 | Module | Reader | Parts | Labs |
 | --- | --- | --- | --- |
-| 010-01 | [Build A Task Graph With Pipelines](sections/section-010/module-01/course.md) | 4 | [lab-01](sections/section-010/module-01/labs/lab-01) |
-| 020-01 | [Control How A Pipeline Runs](sections/section-020/module-01/course.md) | 4 | [lab-01](sections/section-020/module-01/labs/lab-01) |
-| 030-01 | [Fan Out And Build A CI Pipeline](sections/section-030/module-01/course.md) | 4 | [lab-01](sections/section-030/module-01/labs/lab-01) |
-| 010-02 | [Parameters, Variables And Workspaces In Depth](sections/section-010/module-02/course.md) | 4 | [lab-01](sections/section-010/module-02/labs/lab-01) |
+| 010-01 | [Build A Task Graph With Pipelines](sections/section-010/module-01/course.md) | 5 | [lab-01](sections/section-010/module-01/labs/lab-01) |
+| 020-01 | [Control How A Pipeline Runs](sections/section-020/module-01/course.md) | 6 | [lab-01](sections/section-020/module-01/labs/lab-01) |
+| 030-01 | [Fan Out And Build A CI Pipeline](sections/section-030/module-01/course.md) | 6 | [lab-01](sections/section-030/module-01/labs/lab-01) |
+| 010-02 | [Parameters, Variables And Workspaces In Depth](sections/section-010/module-02/course.md) | 5 | [lab-01](sections/section-010/module-02/labs/lab-01) |
 | 020-02 | [Defaults, Service Accounts And Resources](sections/section-020/module-02/course.md) | 4 | [lab-01](sections/section-020/module-02/labs/lab-01) |
-| 030-02 | [Resolvers In Depth](sections/section-030/module-02/course.md) | 4 | [lab-01](sections/section-030/module-02/labs/lab-01) |
+| 030-02 | [Resolvers In Depth](sections/section-030/module-02/course.md) | 6 | [lab-01](sections/section-030/module-02/labs/lab-01) |
 
 | Lab | Title | Kind | Faults or work |
 | --- | --- | --- | --- |

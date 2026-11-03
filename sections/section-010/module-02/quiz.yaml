@@ -12,7 +12,7 @@ scope:
   id: "section-010/module-02"
 placement:
   position: after
-  reading: "sections/section-010/module-02/course-05-summary.md"
+  reading: "sections/section-010/module-02/course-06-summary.md"
 questions:
   - id: ats126-010-02-q01
     type: single_choice

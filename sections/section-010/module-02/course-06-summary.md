@@ -15,5 +15,6 @@ A workspace binding has exactly one source. A `volumeClaimTemplate` creates a cl
 - ConfigMap and Secret workspaces are read-only.
 - A required workspace without a binding fails with `InvalidWorkspaceBindings`.
 - The default `coschedule` value in v1.17.1 is `workspaces`.
+- Trace a wrong parameter through the PipelineRun, the TaskRun and the pod to find the layer that broke it.
 
 <!-- astrona:playground:destroy -->

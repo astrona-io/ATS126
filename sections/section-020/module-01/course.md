@@ -6,7 +6,7 @@ Tekton gives a `Pipeline` four kinds of control. A `when` expression decides bef
 
 Keep one sentence in mind: **every task in a PipelineRun either ran or was skipped, and the status says why.** A TaskRun that exists has a reason such as `Succeeded`, `Failed`, `TaskRunTimeout` or `FailureIgnored`. A task that never ran is in `status.skippedTasks` with a reason such as `When Expressions evaluated to false` or `PipelineRun was stopping`.
 
-The module has four parts. **Guard Tasks With when Expressions** skips a deploy on branches other than `main` and shows what happens to the tasks after it. **Run finally Tasks And Read Execution Status** adds a report that runs on success and on failure. A graded lab follows the second part. **Timeouts, Retries And onError** limits time and handles failures, and the section capstone grades it. **Cancel, Stop And Pause A Run** changes a run that has already started, and holds a new run back.
+The module has six parts. **Guard Tasks With when Expressions** skips a deploy on branches other than `main` and shows what happens to the tasks after it. **Run finally Tasks And Read Execution Status** adds a report that runs on success and on failure. A graded lab follows the second part. **Timeouts, Retries And onError** limits time and handles failures, and the section capstone grades it. **Cancel, Stop And Pause A Run** changes a run that has already started, and holds a new run back. **CEL Expressions In Depth** covers the rules and the failure points of CEL guards. **Step Timeouts, Step onError And Sidecars** moves timeouts and failure handling inside a Task.
 
 ## Learning objectives
 

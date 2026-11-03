@@ -16,7 +16,7 @@ This section teaches those fields. You first guard tasks with `when` expressions
 
 ## The learning path
 
-The section has two modules. The first has a landing page, four short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and its landing page starts it for you.
+The section has two modules. The first has a landing page, several short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and its landing page starts it for you.
 
 ### 1. Control How A Pipeline Runs
 
@@ -26,7 +26,9 @@ The module starts at its landing page, which also launches the playground. The p
 2. Run finally Tasks And Read Execution Status, followed by the lab **Guard A Deploy And Report With finally**
 3. Timeouts, Retries And onError
 4. Cancel, Stop And Pause A Run
-5. Summary
+5. CEL Expressions In Depth
+6. Step Timeouts, Step onError And Sidecars
+7. Summary
 
 ### 2. Defaults, Service Accounts And Resources
 
