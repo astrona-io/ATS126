@@ -4,7 +4,7 @@ kind: question_bank
 id: "ats126-final"
 course_id: ATS126
 exam_code: TEKTON
-status: draft
+status: alpha
 provenance: Original practice material written for this course; not official exam questions.
 scope:
   type: domain

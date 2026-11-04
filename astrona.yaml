@@ -13,7 +13,7 @@
 training:
   id: ATS126
   title: "Tekton: Pipelines, Task Graphs & Custom Tasks"
-  maturity: draft
+  maturity: alpha
   description: >
     Training material covering the Pipelines, Task Graphs & Custom Tasks
     domain of the Tekton training path: Pipeline and PipelineRun
