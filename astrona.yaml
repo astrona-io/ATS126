@@ -1,12 +1,13 @@
 # Course manifest for ATS126 - Pipelines, Task Graphs & Custom Tasks (Tekton).
 #
-# One entry per section under `modules:`. Each section lists, in order: its
-# README, then for each module the landing page (course.md), its parts
-# (course-0N-*.md), and right after the part a lab tests, the lab's
-# question.md reading and the `type: lab` entry. The module's summary page
-# comes last. The section capstone closes the section. Playgrounds are not
-# listed: the landing page's playground marker shows them. solution.md is
-# never listed.
+# One entry per module under `modules:`, in section order. A module lists,
+# in order: the section README when it opens a section, its landing page
+# (course.md), its parts (course-0N-*.md), and right after the part a lab
+# tests, the lab's question.md reading and the `type: lab` entry. The
+# module's summary page and knowledge check come last. The last module of a
+# section also carries the section capstone and the section knowledge check.
+# Playgrounds are not listed: the playground marker on the landing page shows
+# them. solution.md is never listed.
 #
 # Every `path:` is relative to this file.
 
@@ -62,13 +63,14 @@ modules:
         title: "How This Course Is Made"
         path: sections/intro/course-03-how-this-course-is-made.md
 
-  - id: module-010
-    title: "Pipelines And The Task Graph"
+  - id: module-010-01
+    title: "Build A Task Graph With Pipelines"
     description: >
-      Pipeline and PipelineRun specifications, parameters and workspaces,
-      passing results between tasks and out of the Pipeline, ordering tasks
-      into a directed acyclic graph with runAfter and result references, and
-      reading the status and child TaskRuns of a PipelineRun.
+      Module 1 of 2 in Pipelines And The Task Graph. Parts: Pipelines,
+      PipelineRuns And Workspaces; Pass Results Between Tasks And Out Of The
+      Pipeline; Order Tasks Into A Graph And Read The Run; Find, Follow And
+      Clean Up Runs; Embedded Specs And Propagated Parameters. Graded lab: Fix
+      The Task Graph Of A Pipeline. Opens with the section overview.
 
     content:
       - type: reading
@@ -119,6 +121,17 @@ modules:
         title: "Summary"
         path: sections/section-010/module-01/course-06-summary.md
 
+  - id: module-010-02
+    title: "Parameters, Variables And Workspaces In Depth"
+    description: >
+      Module 2 of 2 in Pipelines And The Task Graph. Parts: Parameter Types
+      And Defaults; Variables And Context; Workspace Volume Sources; Optional
+      Workspaces, Sub-Paths And Scheduling; Tracing A Parameter From Run To
+      Step. Graded lab: Pass Typed Parameters And An Optional Workspace. Ends
+      with a knowledge check. Closes the section with its capstone lab and
+      section knowledge check.
+
+    content:
       - type: reading
         title: "Parameters, Variables And Workspaces In Depth"
         path: sections/section-010/module-02/course.md
@@ -196,14 +209,15 @@ modules:
         pass_score: 70
 
 
-  - id: module-020
-    title: "Control Flow With When, Finally, Timeouts And Retries"
+  - id: module-020-01
+    title: "Control How A Pipeline Runs"
     description: >
-      Guarding pipeline tasks with when expressions (and CEL behind its
-      feature flag), reading skipped tasks and their reasons, finally tasks
-      and the execution status of tasks, timeouts for the whole run, for the
-      tasks and for finally, retries, and onError for failures that must not
-      stop the run.
+      Module 1 of 2 in Control Flow With When, Finally, Timeouts And Retries.
+      Parts: Guard Tasks With when Expressions; Run finally Tasks And Read
+      Execution Status; Timeouts, Retries And onError; Cancel, Stop And Pause
+      A Run; CEL Expressions In Depth; Step Timeouts, Step onError And
+      Sidecars. Graded lab: Guard A Deploy And Report With finally. Opens with
+      the section overview.
 
     content:
       - type: reading
@@ -257,6 +271,17 @@ modules:
         title: "Summary"
         path: sections/section-020/module-01/course-07-summary.md
 
+  - id: module-020-02
+    title: "Defaults, Service Accounts And Resources"
+    description: >
+      Module 2 of 2 in Control Flow With When, Finally, Timeouts And Retries.
+      Parts: Cluster Defaults With config-defaults; Settings For A Whole Run;
+      Per-Task Overrides And Resources; Read Why A Run Failed Or Waits. Graded
+      lab: Run A Pipeline With A Service Account, Limits And Timeouts. Ends
+      with a knowledge check. Closes the section with its capstone lab and
+      section knowledge check.
+
+    content:
       - type: reading
         title: "Defaults, Service Accounts And Resources"
         path: sections/section-020/module-02/course.md
@@ -331,15 +356,15 @@ modules:
         pass_score: 70
 
 
-  - id: module-030
-    title: "Matrix Fan-Out, Custom Tasks And An End-To-End CI Pipeline"
+  - id: module-030-01
+    title: "Fan Out And Build A CI Pipeline"
     description: >
-      Fanning a pipeline task out with a matrix and collecting its results,
-      custom tasks and CustomRuns, fetching Tasks with the cluster and Git
-      resolvers, and designing a complete CI pipeline: clone from Gitea, lint,
-      unit tests on two images, a secret scan, an image build and push with
-      kaniko, a deploy only from main, and a notification from a finally
-      task.
+      Module 1 of 2 in Matrix Fan-Out, Custom Tasks And An End-To-End CI
+      Pipeline. Parts: Fan Out A Task With A Matrix; Custom Tasks And Remote
+      Resolution; Design An End-To-End CI Pipeline; Credentials For Registries
+      And Git; Matrix Fan-In And Matrix Parameters; What A Custom Task
+      Controller Must Do. Graded lab: Build An End-To-End CI Pipeline. Opens
+      with the section overview.
 
     content:
       - type: reading
@@ -393,6 +418,17 @@ modules:
         title: "Summary"
         path: sections/section-030/module-01/course-07-summary.md
 
+  - id: module-030-02
+    title: "Resolvers In Depth"
+    description: >
+      Module 2 of 2 in Matrix Fan-Out, Custom Tasks And An End-To-End CI
+      Pipeline. Parts: How Resolution Works; The Cluster Resolver; The Git And
+      HTTP Resolvers; Read And Fix Resolution Failures; The Bundles Resolver;
+      The Hub Resolver. Graded lab: Share A Task And A Pipeline With The
+      Cluster Resolver. Ends with a knowledge check. Closes the section with
+      its capstone lab and section knowledge check.
+
+    content:
       - type: reading
         title: "Resolvers In Depth"
         path: sections/section-030/module-02/course.md
